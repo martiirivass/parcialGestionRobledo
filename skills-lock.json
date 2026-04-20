@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "skills": {
+    "api-authentication": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "computedHash": "d6af30e3d89d606366ef43ac98943ff03caefe6b8e8e833d8ff923457a553184"
+    },
+    "api-design-principles": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "b242f962d5f78bf8bc147e92f2aa0341459b9f5f2f955e9867a8c41b85f22648"
+    },
+    "database": {
+      "source": "miles990/claude-software-skills",
+      "sourceType": "github",
+      "computedHash": "dea995a5e2c52c0f65a05226e1c3d080a6402296c8b653d09cefb10fdf4dfa70"
+    },
+    "database-expert": {
+      "source": "travisjneuman/.claude",
+      "sourceType": "github",
+      "computedHash": "b2cd3cfb3eb6097951915a02dd5870abc975374d548891e531ec43f9a26331b1"
+    },
+    "fastapi": {
+      "source": "itechmeat/llm-code",
+      "sourceType": "github",
+      "computedHash": "3e64a158edbd14e2f713945f56ab23103e8eaf28af546354a4bcc90614568497"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "jwt-authentication": {
+      "source": "pluginagentmarketplace/custom-plugin-nodejs",
+      "sourceType": "github",
+      "computedHash": "be303e98bfc042fc4d261b1f37962b65579d92c442bea93c6326227393d2a99f"
+    },
+    "secure-auth": {
+      "source": "jamditis/claude-skills-journalism",
+      "sourceType": "github",
+      "computedHash": "fa399af1702be655d1daf36761ca8c1f0e9245321419150156692a886df59dc3"
+    },
+    "testing-apis": {
+      "source": "trilwu/secskills",
+      "sourceType": "github",
+      "computedHash": "31a8844a2aecb3fef2b9320ad40ecc8b896a3f8fe610761fa05a5fb513136e48"
+    }
+  }
+}
