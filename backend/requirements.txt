@@ -1,0 +1,31 @@
+# FastAPI and framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+
+# Database
+sqlmodel>=0.0.21
+alembic>=1.14.0
+psycopg2-binary>=2.9.10
+asyncpg>=0.30.0
+
+# Authentication and security
+passlib[bcrypt]>=1.7.4
+python-jose[cryptography]>=3.3.0
+python-multipart>=0.0.20
+
+# Validation
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+email-validator>=2.2.0
+
+# Rate limiting
+slowapi>=0.1.9
+
+# MercadoPago
+mercadopago>=2.2.0
+
+# HTTP Client
+httpx>=0.28.0
+
+# Environment variables
+python-dotenv>=1.0.0
