@@ -1,85 +1,111 @@
 /**
- * Authentication store using Zustand with persistence
+ * Authentication Store - Zustand with persistence
+ * Manages auth state, tokens, and user information
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
+export interface User {
   id: number;
   nombre: string;
   email: string;
-  roles: string[];
+  telefono?: string;
+  creado_en: string;
+  roles: Array<{
+    id: number;
+    nombre: string;
+    descripcion?: string;
+  }>;
 }
 
-interface AuthState {
+export interface Tokens {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+export interface AuthState {
+  // State
+  user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-}
+  error: string | null;
 
-interface AuthActions {
-  login: (tokens: { access_token: string; refresh_token: string }, user: User) => void;
+  // Actions
+  setUser: (user: User) => void;
+  setTokens: (tokens: Tokens) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
   logout: () => void;
-  updateTokens: (tokens: { access_token: string; refresh_token: string }) => void;
-  isAuthenticated: () => boolean;
   hasRole: (role: string) => boolean;
+  updateTokens: (tokens: Tokens) => void;
 }
 
-type AuthStore = AuthState & AuthActions;
-
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      // State
+      // Initial state
+      user: null,
       accessToken: null,
       refreshToken: null,
-      user: null,
       isAuthenticated: false,
       isLoading: false,
-      
+      error: null,
+
       // Actions
-      login: (tokens, user) => {
+      setUser: (user: User) => {
+        set({ user, isAuthenticated: true });
+      },
+
+      setTokens: (tokens: Tokens) => {
         set({
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
-          user,
           isAuthenticated: true,
-          isLoading: false,
         });
       },
-      
+
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading });
+      },
+
+      setError: (error: string | null) => {
+        set({ error });
+      },
+
       logout: () => {
         set({
+          user: null,
           accessToken: null,
           refreshToken: null,
-          user: null,
           isAuthenticated: false,
-          isLoading: false,
+          error: null,
         });
       },
-      
-      updateTokens: (tokens) => {
+
+      hasRole: (role: string): boolean => {
+        const { user } = get();
+        if (!user) return false;
+        return user.roles.some((r) => r.nombre === role);
+      },
+
+      updateTokens: (tokens: Tokens) => {
         set({
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
         });
-      },
-      
-      isAuthenticated: () => get().isAuthenticated,
-      
-      hasRole: (role: string) => {
-        const user = get().user;
-        return user?.roles.includes(role) ?? false;
       },
     }),
     {
-      name: 'food-store-auth',
+      name: 'auth-storage',
+      // Only persist tokens and basic user info, not transient state
       partialize: (state) => ({
+        user: state.user,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
-        user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
     }
