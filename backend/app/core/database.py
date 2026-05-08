@@ -1,8 +1,9 @@
 """
 Database configuration with SQLModel
 """
-from typing import Generator
+from typing import Generator, AsyncGenerator
 from sqlmodel import SQLModel, create_engine, Session
+from sqlalchemy import create_engine as sa_create_engine
 from sqlalchemy.pool import NullPool
 
 from app.core.config import settings

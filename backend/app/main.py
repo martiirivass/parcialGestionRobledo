@@ -32,6 +32,7 @@ app = FastAPI(
 
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
 
 
 # CORS middleware
