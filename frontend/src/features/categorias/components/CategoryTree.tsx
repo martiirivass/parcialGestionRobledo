@@ -1,10 +1,120 @@
 /**
- * CategoryTree Component
- * Recursive component for displaying hierarchical category structure
- * Features: expand/collapse, selection, keyboard navigation, accessibility
+ * Recursive Category Tree Component
+ * Renders hierarchical category structure with expand/collapse functionality
  */
-import React, { useState, useCallback, useMemo } from 'react';
-import { CategoryTreeNode, TreeNodeExpandState } from '../types';
+import React, { useState } from 'react';
+import { CategoryTreeNode } from '../types';
+
+interface CategoryNodeProps {
+  node: CategoryTreeNode;
+  onSelectCategory?: (id: string) => void;
+  selectedCategoryId?: string | null;
+  expandable?: boolean;
+  level?: number;
+}
+
+/**
+ * Individual category node with expand/collapse
+ */
+const CategoryNode: React.FC<CategoryNodeProps> = ({
+  node,
+  onSelectCategory,
+  selectedCategoryId,
+  expandable = true,
+  level = 0,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasChildren = node.subcategorias && node.subcategorias.length > 0;
+  const isSelected = selectedCategoryId === node.id;
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (expandable && hasChildren) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelectCategory?.(node.id);
+  };
+
+  return (
+    <div>
+      <div
+        className={`flex items-center gap-2 p-2 cursor-pointer rounded transition-colors ${
+          isSelected
+            ? 'bg-blue-50 text-blue-600 font-semibold'
+            : 'hover:bg-gray-100'
+        }`}
+        style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
+        onClick={handleSelect}
+        role="button"
+        tabIndex={0}
+        aria-selected={isSelected}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleSelect(e as any);
+          }
+        }}
+      >
+        {/* Expand/Collapse Arrow */}
+        {expandable && hasChildren ? (
+          <button
+            className={`flex-shrink-0 w-5 h-5 flex items-center justify-center transition-transform ${
+              isExpanded ? 'transform rotate-90' : ''
+            }`}
+            onClick={handleToggle}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${node.nombre}`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        ) : (
+          <div className="w-5 flex-shrink-0" />
+        )}
+
+        {/* Category Name */}
+        <span className="flex-grow text-sm font-medium">{node.nombre}</span>
+
+        {/* Product Count Badge (if available) */}
+        {node.producto_count !== undefined && node.producto_count > 0 && (
+          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 rounded-full">
+            {node.producto_count}
+          </span>
+        )}
+      </div>
+
+      {/* Nested Children */}
+      {expandable && isExpanded && hasChildren && (
+        <div className="ml-2">
+          {node.subcategorias.map((child) => (
+            <CategoryNode
+              key={child.id}
+              node={child}
+              onSelectCategory={onSelectCategory}
+              selectedCategoryId={selectedCategoryId}
+              expandable={expandable}
+              level={level + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface CategoryTreeProps {
   categories: CategoryTreeNode[];
@@ -14,8 +124,8 @@ interface CategoryTreeProps {
 }
 
 /**
- * Main CategoryTree component
- * Renders a list of root categories
+ * Category Tree Component
+ * Renders complete category hierarchy recursively
  */
 export const CategoryTree: React.FC<CategoryTreeProps> = ({
   categories,
@@ -23,25 +133,16 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
   selectedCategoryId,
   expandable = true,
 }) => {
-  const [expandedNodes, setExpandedNodes] = useState<TreeNodeExpandState>({});
-
-  const toggleExpand = useCallback((id: string) => {
-    setExpandedNodes((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  }, []);
-
-  if (categories.length === 0) {
+  if (!categories || categories.length === 0) {
     return (
-      <div className="px-4 py-2 text-gray-500 text-sm">
+      <div className="p-4 text-center text-gray-500 text-sm">
         No categories available
       </div>
     );
   }
 
   return (
-    <nav className="space-y-1" role="navigation" aria-label="Categories">
+    <nav className="space-y-1" aria-label="Category navigation">
       {categories.map((category) => (
         <CategoryNode
           key={category.id}
@@ -49,8 +150,6 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
           onSelectCategory={onSelectCategory}
           selectedCategoryId={selectedCategoryId}
           expandable={expandable}
-          expandedNodes={expandedNodes}
-          onToggleExpand={toggleExpand}
           level={0}
         />
       ))}
@@ -58,146 +157,4 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
   );
 };
 
-interface CategoryNodeProps {
-  node: CategoryTreeNode;
-  onSelectCategory?: (id: string) => void;
-  selectedCategoryId?: string | null;
-  expandable?: boolean;
-  expandedNodes: TreeNodeExpandState;
-  onToggleExpand: (id: string) => void;
-  level?: number;
-}
-
-/**
- * Recursive CategoryNode component
- * Renders individual categories and their children
- */
-const CategoryNode: React.FC<CategoryNodeProps> = React.memo(
-  ({
-    node,
-    onSelectCategory,
-    selectedCategoryId,
-    expandable,
-    expandedNodes,
-    onToggleExpand,
-    level = 0,
-  }) => {
-    const isExpanded = expandedNodes[node.id] ?? level === 0; // Root categories expanded by default
-    const hasChildren = node.subcategorias && node.subcategorias.length > 0;
-    const isSelected = selectedCategoryId === node.id;
-
-    const handleClick = useCallback(() => {
-      if (onSelectCategory) {
-        onSelectCategory(node.id);
-      }
-    }, [node.id, onSelectCategory]);
-
-    const handleToggleExpand = useCallback(
-      (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onToggleExpand(node.id);
-      },
-      [node.id, onToggleExpand]
-    );
-
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          handleClick();
-        } else if (e.key === 'ArrowRight' && hasChildren && !isExpanded) {
-          e.preventDefault();
-          onToggleExpand(node.id);
-        } else if (e.key === 'ArrowLeft' && hasChildren && isExpanded) {
-          e.preventDefault();
-          onToggleExpand(node.id);
-        }
-      },
-      [handleClick, hasChildren, isExpanded, node.id, onToggleExpand]
-    );
-
-    const indentClass = `ml-${level * 4}`;
-    const customIndentClass = useMemo(() => {
-      const baseClass = 'block px-2 py-1 text-sm rounded cursor-pointer';
-      const marginClass =
-        level === 0
-          ? 'ml-0'
-          : level === 1
-            ? 'ml-4'
-            : level === 2
-              ? 'ml-8'
-              : level === 3
-                ? 'ml-12'
-                : 'ml-16';
-      return `${baseClass} ${marginClass}`;
-    }, [level]);
-
-    return (
-      <div className="space-y-0.5">
-        <div
-          className={`flex items-center gap-1 ${customIndentClass} transition-colors ${
-            isSelected
-              ? 'bg-blue-50 text-blue-600 font-semibold'
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-          role="treeitem"
-          aria-expanded={hasChildren ? isExpanded : undefined}
-          aria-selected={isSelected}
-          tabIndex={0}
-          onClick={handleClick}
-          onKeyDown={handleKeyDown}
-        >
-          {expandable && hasChildren ? (
-            <button
-              className="inline-flex items-center justify-center w-5 h-5 p-0 text-gray-400 hover:text-gray-600 transition-colors"
-              onClick={handleToggleExpand}
-              aria-label={isExpanded ? 'Collapse' : 'Expand'}
-              tabIndex={-1}
-            >
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  isExpanded ? 'rotate-90' : 'rotate-0'
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          ) : (
-            <div className="w-5" />
-          )}
-          <span className="flex-1">{node.nombre}</span>
-        </div>
-
-        {/* Render children if expanded */}
-        {expandable && hasChildren && isExpanded && (
-          <div role="group">
-            {node.subcategorias.map((child) => (
-              <CategoryNode
-                key={child.id}
-                node={child}
-                onSelectCategory={onSelectCategory}
-                selectedCategoryId={selectedCategoryId}
-                expandable={expandable}
-                expandedNodes={expandedNodes}
-                onToggleExpand={onToggleExpand}
-                level={level + 1}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-);
-
-CategoryNode.displayName = 'CategoryNode';
-
-export default CategoryTree;
+export default React.memo(CategoryTree);

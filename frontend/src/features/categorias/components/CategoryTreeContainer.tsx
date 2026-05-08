@@ -1,58 +1,54 @@
 /**
- * CategoryTreeContainer Component
- * Connects CategoryTree component to the Zustand store
- * Handles data fetching, loading, and error states
+ * Category Tree Container
+ * Manages fetching and displaying category tree with loading/error states
  */
 import React, { useEffect } from 'react';
 import { useCategoriasStore } from '../store/categoriasStore';
 import { CategoryTree } from './CategoryTree';
-import { CategoryTreeNode } from '../types';
 
 interface CategoryTreeContainerProps {
   onSelectCategory?: (id: string) => void;
   selectedCategoryId?: string | null;
   expandable?: boolean;
+  className?: string;
 }
 
-/**
- * Container component that manages category fetching and state
- * Displays loading spinner during fetch and error message if failed
- */
 export const CategoryTreeContainer: React.FC<CategoryTreeContainerProps> = ({
   onSelectCategory,
   selectedCategoryId,
   expandable = true,
+  className = '',
 }) => {
-  const { categories, loading, error, fetchCategories } = useCategoriasStore();
+  const { categories, loading, error, fetchCategories, setSelectedCategory } =
+    useCategoriasStore();
 
-  // Fetch categories on component mount
+  // Fetch categories on mount
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        await fetchCategories();
-      } catch (err) {
-        // Error is already stored in the store
-        console.error('Failed to fetch categories:', err);
-      }
-    };
+    if (categories.length === 0 && !loading) {
+      fetchCategories();
+    }
+  }, []);
 
-    loadCategories();
-  }, [fetchCategories]);
+  // Handle category selection
+  const handleSelect = (id: string) => {
+    setSelectedCategory(id);
+    onSelectCategory?.(id);
+  };
 
   if (loading) {
     return (
-      <div className="px-4 py-3 text-center">
-        <div className="inline-block">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500" />
+      <div className={`flex items-center justify-center p-4 ${className}`}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
+          <span className="text-sm text-gray-600">Loading categories...</span>
         </div>
-        <p className="text-sm text-gray-500 mt-2">Loading categories...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="px-4 py-3 bg-red-50 border border-red-200 rounded">
+      <div className={`p-4 bg-red-50 rounded border border-red-200 ${className}`}>
         <p className="text-sm text-red-600 font-medium">Error loading categories</p>
         <p className="text-xs text-red-500 mt-1">{error}</p>
       </div>
@@ -60,13 +56,15 @@ export const CategoryTreeContainer: React.FC<CategoryTreeContainerProps> = ({
   }
 
   return (
-    <CategoryTree
-      categories={categories as CategoryTreeNode[]}
-      onSelectCategory={onSelectCategory}
-      selectedCategoryId={selectedCategoryId}
-      expandable={expandable}
-    />
+    <div className={className}>
+      <CategoryTree
+        categories={categories}
+        onSelectCategory={handleSelect}
+        selectedCategoryId={selectedCategoryId}
+        expandable={expandable}
+      />
+    </div>
   );
 };
 
-export default CategoryTreeContainer;
+export default React.memo(CategoryTreeContainer);
