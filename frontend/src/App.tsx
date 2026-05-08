@@ -2,8 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { HomePage } from './pages/HomePage'
+import { CategoryDetailPage } from './pages/CategoryDetailPage'
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute'
-import { useAuthStore } from './features/auth/store/authStore'
+import { Header, Footer } from './widgets'
 
 // Placeholder pages for other features
 function CatalogPage() {
@@ -19,37 +20,25 @@ function OrdersPage() {
 }
 
 export default function App() {
+  const handleCategorySelect = (categoryId: string) => {
+    // Navigate to category detail page
+    window.location.href = `/categories/${categoryId}`
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <a href="/" className="text-xl font-bold text-green-600">
-                Food Store
-              </a>
-            </div>
-            <div className="flex items-center space-x-4">
-              <a href="/catalog" className="text-gray-600 hover:text-gray-900">
-                Catalog
-              </a>
-              <a href="/cart" className="text-gray-600 hover:text-gray-900">
-                Cart
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <Header onCategorySelect={handleCategorySelect} />
       
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/categories/:categoryId" element={<CategoryDetailPage />} />
           
           {/* Protected routes */}
           <Route
@@ -73,6 +62,9 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }
