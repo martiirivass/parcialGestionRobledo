@@ -3,8 +3,8 @@
  * Automatically adds Authorization header and handles token refresh
  */
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { useAuthStore } from '../features/auth/store/authStore';
-import { refreshToken as refreshTokenAPI } from '../features/auth/api';
+import { useAuthStore } from '../../features/auth/store/authStore';
+import { refreshToken as refreshTokenAPI } from '../../features/auth/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 

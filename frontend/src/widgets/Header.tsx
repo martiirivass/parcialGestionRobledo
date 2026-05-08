@@ -4,8 +4,8 @@
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '../../features/auth/store/authStore';
-import { CategoryTreeContainer } from '../../features/categorias/components/CategoryTreeContainer';
+import { useAuthStore } from '../features/auth/store/authStore';
+import { CategoryTreeContainer } from '../features/categorias/components/CategoryTreeContainer';
 
 interface HeaderProps {
   onCategorySelect?: (categoryId: string) => void;

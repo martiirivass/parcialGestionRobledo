@@ -2,7 +2,7 @@
  * API client functions for category operations
  * Handles communication with backend /api/v1/categorias endpoints
  */
-import { apiClient } from '../../shared/api/client';
+import apiClient from '../../shared/api/client';
 import {
   Category,
   CategoryTreeNode,

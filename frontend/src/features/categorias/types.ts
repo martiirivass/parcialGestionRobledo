@@ -14,6 +14,7 @@ export interface Category {
 
 export interface CategoryTreeNode extends Category {
   subcategorias: CategoryTreeNode[];
+  producto_count?: number;
 }
 
 export interface CategoryCreate {

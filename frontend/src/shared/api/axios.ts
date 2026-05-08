@@ -37,7 +37,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     
     // If 401 and not already retrying
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
@@ -53,10 +53,15 @@ apiClient.interceptors.response.use(
             refresh_token: refreshToken,
           });
           
-          const { access_token, refresh_token: new_refresh_token } = response.data;
+          const { access_token, refresh_token: new_refresh_token, token_type, expires_in } = response.data;
           
           // Update store
-          authStore.updateTokens({ access_token, refresh_token: new_refresh_token });
+          authStore.updateTokens({ 
+            access_token, 
+            refresh_token: new_refresh_token,
+            token_type,
+            expires_in
+          });
           
           // Retry original request
           if (originalRequest.headers) {
