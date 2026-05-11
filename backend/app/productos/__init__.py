@@ -1,0 +1,1 @@
+"""Productos module - Product catalog and management"""
