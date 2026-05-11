@@ -1,35 +1,35 @@
 ## Phase 1: Database Schema and Migrations
 
-- [ ] 1.1 Create Alembic migration file: `alembic revision --autogenerate -m "Add Producto table and M2M relations"`
+- [x] 1.1 Create Alembic migration file: `alembic revision --autogenerate -m "Add Producto table and M2M relations"`
   - Tables: `productos`, `producto_categoria`, `producto_ingrediente`
   - Columns as specified in design.md and specs
   - Foreign keys with ON DELETE CASCADE for M2M tables
   - Constraints: NOT NULL, UNIQUE, CHECK (precio > 0, stock >= 0)
   - Indexes: idx_productos_disponible_eliminado, idx_productos_nombre, idx_producto_categoria_*, idx_producto_ingrediente_*
 
-- [ ] 1.2 Verify migration file is syntactically correct: `alembic upgrade head` (test in local DB)
+- [x] 1.2 Verify migration file is syntactically correct: `alembic upgrade head` (test in local DB)
 
-- [ ] 1.3 Verify migration is reversible: `alembic downgrade -1` then `alembic upgrade head` (test rollback scenario)
+- [x] 1.3 Verify migration is reversible: `alembic downgrade -1` then `alembic upgrade head` (test rollback scenario)
 
-- [ ] 1.4 Add migration to git: `git add backend/migrations/versions/`
+- [x] 1.4 Add migration to git: `git add backend/migrations/versions/`
 
 ## Phase 2: Backend SQLModel and Repository Layer
 
-- [ ] 2.1 Create `backend/app/models/product.py` with SQLModel `Producto` class
+- [x] 2.1 Create `backend/app/models/product.py` with SQLModel `Producto` class
   - Fields: id, nombre, descripcion, precio (Decimal), stock, imagen_url, disponible, eliminado_en, creado_en, actualizado_en
   - Relationships: `categorias` (M2M via ProductoCategoria), `ingredientes` (M2M via ProductoIngrediente)
   - Default values: disponible=True, creado_en/actualizado_en=datetime.utcnow
   - Use SQLAlchemy Column with NUMERIC precision for price: `Column(NUMERIC(10, 2))`
 
-- [ ] 2.2 Create `backend/app/models/producto_categoria.py` with SQLModel `ProductoCategoria`
+- [x] 2.2 Create `backend/app/models/producto_categoria.py` with SQLModel `ProductoCategoria`
   - Fields: producto_id (FK), categoria_id (FK)
   - Composite primary key
 
-- [ ] 2.3 Create `backend/app/models/producto_ingrediente.py` with SQLModel `ProductoIngrediente`
+- [x] 2.3 Create `backend/app/models/producto_ingrediente.py` with SQLModel `ProductoIngrediente`
   - Fields: producto_id (FK), ingrediente_id (FK)
   - Composite primary key
 
-- [ ] 2.4 Create `backend/app/repositories/product_repository.py` with `ProductRepository` class
+- [x] 2.4 Create `backend/app/repositories/product_repository.py` with `ProductRepository` class
   - Inherit from `BaseRepository[Producto]`
   - Implement `get_all_public(skip, limit, categoria_id=None, search=None, excluir_alergenos=None)` → List[Producto]
     - Returns only available products (disponible=true, stock>0, eliminado_en IS NULL)
@@ -55,15 +55,15 @@
     - Validates resulting stock >= 0
     - Increments actualizado_en
 
-- [ ] 2.5 Create `backend/app/models/__init__.py` and add Producto imports to ensure models are registered
+- [x] 2.5 Create `backend/app/models/__init__.py` and add Producto imports to ensure models are registered
 
-- [ ] 2.6 Add `ProductRepository` to `UnitOfWork` class as attribute `self.productos`
+- [x] 2.6 Add `ProductRepository` to `UnitOfWork` class as attribute `self.productos`
 
-- [ ] 2.7 Run `pytest backend/tests/test_models.py` to verify models load correctly (no ORM errors)
+- [x] 2.7 Run `pytest backend/tests/test_models.py` to verify models load correctly (no ORM errors)
 
 ## Phase 3: Backend Service Layer
 
-- [ ] 3.1 Create `backend/app/productos/service.py` with `ProductService` class
+- [x] 3.1 Create `backend/app/productos/service.py` with `ProductService` class
   - Implement `create_product(nombre, descripcion, precio, stock, imagen_url, disponible, categorias_ids, ingredientes_ids, uow)` → Producto
     - Validate: precio > 0, stock >= 0, nombre 3-255 chars, imagen_url valid if provided
     - Check all categoria_ids exist and not soft-deleted
@@ -92,7 +92,7 @@
     - Call repository update_stock
     - Return updated product
 
-- [ ] 3.2 Create `backend/app/productos/schemas.py` with Pydantic request/response models
+- [x] 3.2 Create `backend/app/productos/schemas.py` with Pydantic request/response models
   - `ProductBase`: nombre, descripcion, precio, stock, imagen_url, disponible (all optional for Update)
   - `ProductCreate`: extends ProductBase, adds categorias_ids, ingredientes_ids (lists of UUIDs)
   - `ProductUpdate`: all fields optional
@@ -100,7 +100,7 @@
   - `ProductPublicResponse`: same as ProductResponse but excludes exact stock (only disponible boolean)
   - Add validators: @field_validator for precio > 0, stock >= 0, nombre length, etc.
 
-- [ ] 3.3 Write unit tests in `backend/tests/test_productos_service.py`
+- [x] 3.3 Write unit tests in `backend/tests/test_productos_service.py`
   - Test create_product with valid data → returns Producto
   - Test create_product with invalid price (price <= 0) → raises ValueError
   - Test create_product with invalid stock (stock < 0) → raises ValueError
@@ -110,11 +110,11 @@
   - Test soft_delete → sets eliminado_en
   - Test get_product includes relationships (categorias, ingredientes)
 
-- [ ] 3.4 Run tests: `pytest backend/tests/test_productos_service.py -v`
+- [x] 3.4 Run tests: `pytest backend/tests/test_productos_service.py -v`
 
 ## Phase 4: Backend API Router
 
-- [ ] 4.1 Create `backend/app/productos/router.py` with FastAPI router
+- [x] 4.1 Create `backend/app/productos/router.py` with FastAPI router
   - `POST /api/v1/productos` → create_product
     - Request: ProductCreate schema
     - Response: 201 with ProductResponse
@@ -153,9 +153,9 @@
     - Authorization: require_role(['ADMIN', 'STOCK'])
     - Error: 400 (invalid ingrediente IDs), 403, 404
 
-- [ ] 4.2 Register router in `backend/app/main.py`: `app.include_router(productos_router, prefix="/api/v1", tags=["productos"])`
+- [x] 4.2 Register router in `backend/app/main.py`: `app.include_router(productos_router, prefix="/api/v1", tags=["productos"])`
 
-- [ ] 4.3 Write integration tests in `backend/tests/test_productos_router.py`
+- [x] 4.3 Write integration tests in `backend/tests/test_productos_router.py`
   - Test POST /productos with valid data → 201
   - Test POST /productos with invalid price → 400
   - Test POST /productos with invalid stock → 400
@@ -176,17 +176,17 @@
   - Test PUT /productos/:id/ingredientes with valid IDs → 200
   - Test authorization middleware blocks unauthenticated requests to protected endpoints → 401
 
-- [ ] 4.4 Run integration tests: `pytest backend/tests/test_productos_router.py -v`
+- [x] 4.4 Run integration tests: `pytest backend/tests/test_productos_router.py -v`
 
-- [ ] 4.5 Verify Swagger/OpenAPI docs: `http://localhost:8000/docs` shows all producto endpoints
+- [x] 4.5 Verify Swagger/OpenAPI docs: `http://localhost:8000/docs` shows all producto endpoints
 
 ## Phase 5: Backend Linting and Type Checking
 
-- [ ] 5.1 Run pylint: `pylint backend/app/productos/` → resolve warnings
+- [x] 5.1 Run pylint: `pylint backend/app/productos/` → resolve warnings
 
-- [ ] 5.2 Run mypy: `mypy backend/app/productos/ --strict` → resolve type errors
+- [x] 5.2 Run mypy: `mypy backend/app/productos/ --strict` → resolve type errors
 
-- [ ] 5.3 Add docstrings to all public methods
+- [x] 5.3 Add docstrings to all public methods
   - ProductService methods: describe params, return types, raises exceptions
   - ProductRepository methods: describe SQL behavior, indexes used
   - Router endpoints: OpenAPI-friendly docstrings with examples
