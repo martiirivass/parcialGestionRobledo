@@ -1,18 +1,34 @@
 /**
- * HomePage - Home page (placeholder)
+ * HomePage - Home page with product catalog
  */
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../features/auth/store/authStore';
+import { ProductFilterBar } from '../features/products/components/ProductFilterBar';
+import { ProductGrid } from '../features/products/components/ProductGrid';
+import { ProductPublic, ProductFilters } from '../features/products/types';
 
 export const HomePage: React.FC = () => {
   const { isAuthenticated, user, logout, refreshToken } = useAuthStore();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [filters, setFilters] = useState<ProductFilters>({
+    categoria_id: searchParams.get('category') || undefined,
+  });
 
   const handleLogout = async () => {
     if (refreshToken && isAuthenticated) {
       // API logout call would happen here
       logout();
     }
+  };
+
+  const handleProductSelect = (product: ProductPublic) => {
+    navigate(`/products/${product.id}`);
+  };
+
+  const handleFilter = (newFilters: ProductFilters) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -52,32 +68,38 @@ export const HomePage: React.FC = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome to Food Store
           </h2>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-xl text-gray-600">
             Your one-stop shop for quality food products
           </p>
+        </div>
 
-          {isAuthenticated ? (
-            <div className="bg-blue-50 p-8 rounded-lg">
-              <h3 className="text-xl font-semibold text-blue-900 mb-2">
-                Account Information
-              </h3>
-              <p className="text-blue-800">Email: {user?.email}</p>
-              <p className="text-blue-800">
-                Roles: {user?.roles.map((r) => r.nombre).join(', ')}
-              </p>
-              <p className="text-blue-800">
-                Member since: {user?.creado_en ? new Date(user.creado_en).toLocaleDateString() : 'N/A'}
-              </p>
-            </div>
-          ) : (
-            <p className="text-gray-600 mb-8">
-              Please login or register to access all features
+        {isAuthenticated && (
+          <div className="bg-blue-50 p-4 rounded-lg mb-8">
+            <p className="text-blue-800">
+              <span className="font-semibold">Member since:</span>{' '}
+              {user?.creado_en ? new Date(user.creado_en).toLocaleDateString() : 'N/A'}
             </p>
-          )}
+          </div>
+        )}
+
+        {/* Product Catalog Section */}
+        <div className="mt-12">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            Our Products
+          </h3>
+
+          {/* Filter Bar */}
+          <ProductFilterBar onFilter={handleFilter} />
+
+          {/* Product Grid */}
+          <ProductGrid
+            filters={filters}
+            onProductSelect={handleProductSelect}
+          />
         </div>
       </main>
     </div>
