@@ -4,7 +4,7 @@ Product Service - Business logic for product management
 from datetime import datetime
 from typing import Optional, List, Tuple
 from decimal import Decimal
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.models.catalogo import Producto, Categoria, Ingrediente
 from app.repositories.product_repository import ProductRepository
@@ -69,9 +69,11 @@ class ProductService:
         # Validate categories exist
         if categorias_ids:
             for cat_id in categorias_ids:
-                cat = self.session.query(Categoria).filter(
-                    Categoria.id == cat_id,
-                    Categoria.eliminado_en == None
+                cat = self.session.exec(
+                    select(Categoria).where(
+                        Categoria.id == cat_id,
+                        Categoria.eliminado_en == None
+                    )
                 ).first()
                 if not cat:
                     raise ValueError(f"Categoria with id {cat_id} not found or is deleted")
@@ -79,13 +81,13 @@ class ProductService:
         # Validate ingredients exist
         if ingredientes_ids:
             for ing_id in ingredientes_ids:
-                ing = self.session.query(Ingrediente).filter(
-                    Ingrediente.id == ing_id
+                ing = self.session.exec(
+                    select(Ingrediente).where(Ingrediente.id == ing_id)
                 ).first()
                 if not ing:
                     raise ValueError(f"Ingrediente with id {ing_id} not found")
-        
-        # Create product
+         
+         # Create product
         producto = self.repo.create_with_associations(
             nombre=nombre,
             descripcion=descripcion,
@@ -220,9 +222,11 @@ class ProductService:
         # Validate categories exist
         if categorias_ids:
             for cat_id in categorias_ids:
-                cat = self.session.query(Categoria).filter(
-                    Categoria.id == cat_id,
-                    Categoria.eliminado_en == None
+                cat = self.session.exec(
+                    select(Categoria).where(
+                        Categoria.id == cat_id,
+                        Categoria.eliminado_en == None
+                    )
                 ).first()
                 if not cat:
                     raise ValueError(f"Categoria with id {cat_id} not found or is deleted")
@@ -230,13 +234,13 @@ class ProductService:
         # Validate ingredients exist
         if ingredientes_ids:
             for ing_id in ingredientes_ids:
-                ing = self.session.query(Ingrediente).filter(
-                    Ingrediente.id == ing_id
+                ing = self.session.exec(
+                    select(Ingrediente).where(Ingrediente.id == ing_id)
                 ).first()
                 if not ing:
                     raise ValueError(f"Ingrediente with id {ing_id} not found")
-        
-        # Update product
+         
+         # Update product
         producto = self.repo.update_with_associations(
             id=id,
             nombre=nombre,
