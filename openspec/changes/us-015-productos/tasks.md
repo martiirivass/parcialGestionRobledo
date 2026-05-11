@@ -193,13 +193,13 @@
 
 ## Phase 6: Frontend State Management and API Client
 
-- [ ] 6.1 Create `frontend/src/features/products/types.ts`
+- [x] 6.1 Create `frontend/src/features/products/types.ts`
   - `type Product = {id, nombre, descripcion, precio, stock?, imagen_url, disponible, categorias, ingredientes, creado_en}`
   - `type ProductPublic = { ...Product but sin stock }`
   - `type Ingrediente = {id, nombre, es_alergeno}`
   - `type Categoria = {id, nombre}`
 
-- [ ] 6.2 Create `frontend/src/features/products/api.ts` with axios API functions
+- [x] 6.2 Create `frontend/src/features/products/api.ts` with axios API functions
   - `getProducts(page, limit, categoria_id?, search?, excluirAlergenos?)` → {data: [], pagination}
   - `getProductById(id)` → Product
   - `createProduct(data)` → Product (admin only)
@@ -210,13 +210,13 @@
   - `assignIngredients(id, ingrediente_ids)` → Product (admin only)
   - Use centralized `apiClient` with auth interceptors
 
-- [ ] 6.3 Create `frontend/src/features/products/store/productsStore.ts` with Zustand
+- [x] 6.3 Create `frontend/src/features/products/store/productsStore.ts` with Zustand
   - State: `products: Product[]`, `currentProduct: Product | null`, `isLoading: bool`, `error: string | null`, `pagination: {page, limit, total, totalPages}`
   - Actions: `fetchProducts(filters)`, `fetchProductById(id)`, `setCurrentProduct(product)`, `setLoading(bool)`, `setError(string | null)`, `setPagination(pagination)`
   - Export hook: `useProducts()`
   - NO persistence (read-only from API; ephemeral state)
 
-- [ ] 6.4 Write unit tests for store in `frontend/tests/productsStore.test.ts`
+- [x] 6.4 Write unit tests for store in `frontend/tests/productsStore.test.ts`
   - Test store initialization
   - Test setters update state correctly
   - Test pagination state updates
