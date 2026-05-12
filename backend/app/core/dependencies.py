@@ -3,7 +3,7 @@ FastAPI Dependencies for authentication and authorization
 """
 from typing import Optional, List
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session
 
 from app.core.database import get_session_context
@@ -17,7 +17,7 @@ security = HTTPBearer()
 
 
 async def get_current_user(
-    credentials: HTTPAuthCredentials = Depends(security),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     session: Session = Depends(get_session_context),
 ) -> Usuario:
     """
@@ -100,7 +100,7 @@ async def require_role(
 
 
 async def get_current_user_optional(
-    credentials: Optional[HTTPAuthCredentials] = Depends(security),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     session: Session = Depends(get_session_context),
 ) -> Optional[Usuario]:
     """

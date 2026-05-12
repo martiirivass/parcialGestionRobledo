@@ -1,11 +1,11 @@
 /**
  * RegisterForm - User registration form component
  */
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useForm } from '@tanstack/react-form';
-import { register } from '../api';
-import { useAuthStore } from '../store/authStore';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "@tanstack/react-form";
+import { register } from "../api";
+import { useAuthStore } from "../store/authStore";
 
 export const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
@@ -16,11 +16,11 @@ export const RegisterForm: React.FC = () => {
 
   const form = useForm({
     defaultValues: {
-      nombre: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      telefono: '',
+      nombre: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      telefono: "",
     },
     onSubmit: async ({ value }) => {
       setIsSubmitting(true);
@@ -28,7 +28,7 @@ export const RegisterForm: React.FC = () => {
 
       // Validate passwords match
       if (value.password !== value.confirmPassword) {
-        setError('Passwords do not match');
+        setError("Passwords do not match");
         setIsSubmitting(false);
         return;
       }
@@ -46,9 +46,10 @@ export const RegisterForm: React.FC = () => {
         setTokens(response.tokens);
 
         // Redirect to home
-        navigate('/');
+        navigate("/");
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Registration failed';
+        const message =
+          err instanceof Error ? err.message : "Registration failed";
         setError(message);
       } finally {
         setIsSubmitting(false);
@@ -80,8 +81,8 @@ export const RegisterForm: React.FC = () => {
           name="nombre"
           validators={{
             onChange: ({ value }) => {
-              if (!value) return 'Name is required';
-              if (value.length < 3) return 'Name must be at least 3 characters';
+              if (!value) return "Name is required";
+              if (value.length < 3) return "Name must be at least 3 characters";
             },
           }}
           children={(field) => (
@@ -93,14 +94,17 @@ export const RegisterForm: React.FC = () => {
                 Full Name
               </label>
               <input
-                {...field.getInputProps()}
+                name={field.name}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
                 type="text"
                 placeholder="John Doe"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {field.state.meta.errors && (
                 <span className="text-sm text-red-600">
-                  {field.state.meta.errors.join(', ')}
+                  {field.state.meta.errors.join(", ")}
                 </span>
               )}
             </div>
@@ -112,9 +116,9 @@ export const RegisterForm: React.FC = () => {
           name="email"
           validators={{
             onChange: ({ value }) => {
-              if (!value) return 'Email is required';
+              if (!value) return "Email is required";
               if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                return 'Please enter a valid email';
+                return "Please enter a valid email";
               }
             },
           }}
@@ -127,14 +131,17 @@ export const RegisterForm: React.FC = () => {
                 Email
               </label>
               <input
-                {...field.getInputProps()}
+                name={field.name}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
                 type="email"
                 placeholder="you@example.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {field.state.meta.errors && (
                 <span className="text-sm text-red-600">
-                  {field.state.meta.errors.join(', ')}
+                  {field.state.meta.errors.join(", ")}
                 </span>
               )}
             </div>
@@ -146,8 +153,9 @@ export const RegisterForm: React.FC = () => {
           name="password"
           validators={{
             onChange: ({ value }) => {
-              if (!value) return 'Password is required';
-              if (value.length < 8) return 'Password must be at least 8 characters';
+              if (!value) return "Password is required";
+              if (value.length < 8)
+                return "Password must be at least 8 characters";
             },
           }}
           children={(field) => (
@@ -159,14 +167,17 @@ export const RegisterForm: React.FC = () => {
                 Password
               </label>
               <input
-                {...field.getInputProps()}
+                name={field.name}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
                 type="password"
                 placeholder="••••••••"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {field.state.meta.errors && (
                 <span className="text-sm text-red-600">
-                  {field.state.meta.errors.join(', ')}
+                  {field.state.meta.errors.join(", ")}
                 </span>
               )}
             </div>
@@ -178,7 +189,7 @@ export const RegisterForm: React.FC = () => {
           name="confirmPassword"
           validators={{
             onChange: ({ value }) => {
-              if (!value) return 'Confirm password is required';
+              if (!value) return "Confirm password is required";
             },
           }}
           children={(field) => (
@@ -190,14 +201,17 @@ export const RegisterForm: React.FC = () => {
                 Confirm Password
               </label>
               <input
-                {...field.getInputProps()}
+                name={field.name}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
                 type="password"
                 placeholder="••••••••"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {field.state.meta.errors && (
                 <span className="text-sm text-red-600">
-                  {field.state.meta.errors.join(', ')}
+                  {field.state.meta.errors.join(", ")}
                 </span>
               )}
             </div>
@@ -216,7 +230,10 @@ export const RegisterForm: React.FC = () => {
                 Phone (Optional)
               </label>
               <input
-                {...field.getInputProps()}
+                name={field.name}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
                 type="tel"
                 placeholder="+1 (555) 000-0000"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -231,14 +248,14 @@ export const RegisterForm: React.FC = () => {
           disabled={isSubmitting}
           className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? 'Creating account...' : 'Sign Up'}
+          {isSubmitting ? "Creating account..." : "Sign Up"}
         </button>
       </form>
 
       {/* Sign In Link */}
       <div className="mt-6 text-center">
         <p className="text-gray-600">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
             to="/login"
             className="text-blue-600 hover:text-blue-700 font-medium"

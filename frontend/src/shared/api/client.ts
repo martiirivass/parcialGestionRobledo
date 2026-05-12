@@ -2,11 +2,11 @@
  * Axios instance with interceptors for authentication
  * Automatically adds Authorization header and handles token refresh
  */
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { useAuthStore } from '../features/auth/store/authStore';
-import { refreshToken as refreshTokenAPI } from '../features/auth/api';
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { useAuthStore } from "../../features/auth/store/authStore";
+import { refreshToken as refreshTokenAPI } from "../../features/auth/api";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -47,7 +47,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 /**
@@ -67,7 +67,7 @@ apiClient.interceptors.response.use(
       if (!refreshToken) {
         // No refresh token, logout
         logout();
-        window.location.href = '/login';
+        window.location.href = "/login";
         return Promise.reject(error);
       }
 
@@ -101,14 +101,14 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
         logout();
-        window.location.href = '/login';
+        window.location.href = "/login";
         isRefreshing = false;
         return Promise.reject(refreshError);
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

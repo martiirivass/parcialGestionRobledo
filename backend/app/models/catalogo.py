@@ -2,8 +2,10 @@
 Domain Models - Catálogo de Productos
 """
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import Numeric, Column
 
 if TYPE_CHECKING:
     from app.models.usuario import Usuario
@@ -40,9 +42,9 @@ class Producto(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str = Field(max_length=255, nullable=False)
     descripcion: Optional[str] = Field(default=None)
-    imagen: Optional[str] = Field(default=None, max_length=500)
-    precio: float = Field(nullable=False)  # NUMERIC in PostgreSQL
-    stock_cantidad: int = Field(default=0, nullable=False)
+    imagen_url: Optional[str] = Field(default=None, max_length=500)
+    precio: Decimal = Field(sa_column=Column(Numeric(10, 2), nullable=False))
+    stock: int = Field(default=0, nullable=False)
     disponible: bool = Field(default=True, nullable=False)
     
     # Audit fields

@@ -1,10 +1,10 @@
 /**
  * Auth API - Axios functions for authentication endpoints
  */
-import axios from 'axios';
-import { User, Tokens } from './store/authStore';
+import axios from "axios";
+import { User, Tokens } from "./store/authStore";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export interface LoginCredentials {
   email: string;
@@ -31,14 +31,14 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
   try {
     const response = await axios.post<AuthResponse>(
       `${API_URL}/api/v1/auth/register`,
-      data
+      data,
     );
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 409) {
-      throw new Error('Email is already registered');
+      throw new Error("Email is already registered");
     }
-    throw new Error(error.response?.data?.detail || 'Registration failed');
+    throw new Error(error.response?.data?.detail || "Registration failed");
   }
 }
 
@@ -46,21 +46,23 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
  * Login with email and password
  * @throws Error if login fails
  */
-export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+export async function login(
+  credentials: LoginCredentials,
+): Promise<AuthResponse> {
   try {
     const response = await axios.post<AuthResponse>(
       `${API_URL}/api/v1/auth/login`,
-      credentials
+      credentials,
     );
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {
-      throw new Error('Invalid email or password');
+      throw new Error("Invalid email or password");
     }
     if (error.response?.status === 429) {
-      throw new Error('Too many login attempts. Please try again later.');
+      throw new Error("Too many login attempts. Please try again later.");
     }
-    throw new Error(error.response?.data?.detail || 'Login failed');
+    throw new Error(error.response?.data?.detail || "Login failed");
   }
 }
 
@@ -72,14 +74,14 @@ export async function refreshToken(refreshToken: string): Promise<Tokens> {
   try {
     const response = await axios.post<Tokens>(
       `${API_URL}/api/v1/auth/refresh`,
-      { refresh_token: refreshToken }
+      { refresh_token: refreshToken },
     );
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {
-      throw new Error('Session expired. Please login again.');
+      throw new Error("Session expired. Please login again.");
     }
-    throw new Error(error.response?.data?.detail || 'Token refresh failed');
+    throw new Error(error.response?.data?.detail || "Token refresh failed");
   }
 }
 
@@ -89,13 +91,12 @@ export async function refreshToken(refreshToken: string): Promise<Tokens> {
  */
 export async function logout(refreshToken: string): Promise<void> {
   try {
-    await axios.post(
-      `${API_URL}/api/v1/auth/logout`,
-      { refresh_token: refreshToken }
-    );
+    await axios.post(`${API_URL}/api/v1/auth/logout`, {
+      refresh_token: refreshToken,
+    });
   } catch (error: any) {
     // Logout still succeeds even if endpoint fails
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
   }
 }
 
@@ -105,19 +106,16 @@ export async function logout(refreshToken: string): Promise<void> {
  */
 export async function getCurrentUser(accessToken: string): Promise<User> {
   try {
-    const response = await axios.get<User>(
-      `${API_URL}/api/v1/auth/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const response = await axios.get<User>(`${API_URL}/api/v1/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 401) {
-      throw new Error('Not authenticated');
+      throw new Error("Not authenticated");
     }
-    throw new Error(error.response?.data?.detail || 'Failed to fetch user');
+    throw new Error(error.response?.data?.detail || "Failed to fetch user");
   }
 }
