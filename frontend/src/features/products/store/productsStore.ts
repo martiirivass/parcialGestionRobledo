@@ -6,7 +6,6 @@
 
 import { create } from 'zustand';
 import {
-  Product,
   ProductPublic,
   PaginationResponse,
   ProductFilters,

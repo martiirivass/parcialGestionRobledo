@@ -4,14 +4,11 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import useProductsStore from './productsStore';
-import * as api from '../api';
+import useProductsStore from '../src/features/products/store/productsStore';
+import * as api from '../src/features/products/api';
 
 // Mock the API module
-vi.mock('../api', () => ({
-  getProducts: vi.fn(),
-  getProductById: vi.fn(),
-}));
+vi.mock('../src/features/products/api');
 
 describe('Products Store', () => {
   beforeEach(() => {
@@ -160,7 +157,7 @@ describe('Products Store', () => {
         },
       };
 
-      vi.mocked(api.getProducts).mockResolvedValueOnce(mockResponse);
+      (api.getProducts as any).mockResolvedValue(mockResponse);
 
       const store = useProductsStore.getState();
       await store.fetchProducts();
@@ -173,7 +170,7 @@ describe('Products Store', () => {
     });
 
     it('should set loading state during fetch', async () => {
-      vi.mocked(api.getProducts).mockImplementationOnce(
+      (api.getProducts as any).mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({
           data: [],
           pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
@@ -191,7 +188,7 @@ describe('Products Store', () => {
 
     it('should handle API errors correctly', async () => {
       const errorMessage = 'API Error';
-      vi.mocked(api.getProducts).mockRejectedValueOnce(new Error(errorMessage));
+      (api.getProducts as any).mockRejectedValue(new Error(errorMessage));
 
       const store = useProductsStore.getState();
       await store.fetchProducts();
@@ -208,7 +205,7 @@ describe('Products Store', () => {
         pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       };
 
-      vi.mocked(api.getProducts).mockResolvedValueOnce(mockResponse);
+      (api.getProducts as any).mockResolvedValue(mockResponse);
 
       const store = useProductsStore.getState();
       const filters = {
@@ -236,7 +233,7 @@ describe('Products Store', () => {
         creado_en: '2026-05-11T00:00:00Z',
       };
 
-      vi.mocked(api.getProductById).mockResolvedValueOnce(mockProduct);
+      (api.getProductById as any).mockResolvedValue(mockProduct);
 
       const store = useProductsStore.getState();
       await store.fetchProductById('1');
@@ -248,7 +245,7 @@ describe('Products Store', () => {
     });
 
     it('should set loading state during fetch', async () => {
-      vi.mocked(api.getProductById).mockImplementationOnce(
+      (api.getProductById as any).mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({
           id: '1',
           nombre: 'Product',
@@ -271,7 +268,7 @@ describe('Products Store', () => {
 
     it('should handle API errors and clear currentProduct', async () => {
       const errorMessage = 'Product not found';
-      vi.mocked(api.getProductById).mockRejectedValueOnce(new Error(errorMessage));
+      (api.getProductById as any).mockRejectedValue(new Error(errorMessage));
 
       const store = useProductsStore.getState();
       await store.fetchProductById('1');
@@ -293,7 +290,7 @@ describe('Products Store', () => {
         creado_en: '2026-05-11T00:00:00Z',
       };
 
-      vi.mocked(api.getProductById).mockResolvedValueOnce(mockProduct);
+      (api.getProductById as any).mockResolvedValue(mockProduct);
 
       const store = useProductsStore.getState();
       await store.fetchProductById('prod-123');

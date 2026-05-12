@@ -6,13 +6,12 @@
 
 import apiClient from '../../shared/api/axios';
 import {
-  Product,
   ProductPublic,
   ProductCreate,
   ProductUpdate,
   ProductListResponse,
   ProductFilters,
-  PaginationResponse,
+  Product,
 } from './types';
 
 /**
