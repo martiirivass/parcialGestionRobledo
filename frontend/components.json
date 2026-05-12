@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "aliasPrefix": "@",
+  "aliases": {
+    "@": "./src",
+    "@/components": "./src/components",
+    "@/shared": "./src/shared",
+    "@/entities": "./src/entities",
+    "@/features": "./src/features",
+    "@/lib": "./src/lib",
+    "@/hooks": "./src/hooks",
+    "@/utils": "./src/shared/utils",
+    "@/types": "./src/shared/types"
+  }
+}
