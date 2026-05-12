@@ -1,12 +1,12 @@
 """
 Productos Router - Product management endpoints
 """
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session
 
 from app.core.database import get_session_context
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_user_optional
 from app.models.usuario import Usuario
 from app.productos.schemas import (
     ProductCreate,
@@ -190,7 +190,7 @@ async def get_product(
     product_id: int,
     admin: bool = Query(False, description="Admin view (requires auth)"),
     include_deleted: bool = Query(False, description="Include soft-deleted products (admin only)"),
-    current_user: Usuario = Depends(get_current_user) if admin else None,
+    current_user: Optional[Usuario] = Depends(get_current_user_optional),
     session: Session = Depends(get_session_context),
 ):
     """
