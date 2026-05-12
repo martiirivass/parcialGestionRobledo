@@ -7,15 +7,15 @@ import { describe, it, expect, beforeEach, vi, Mock } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
-import { HomePage } from "../src/pages/HomePage";
-import * as authModule from "../src/features/auth/store/authStore";
-import * as productsModule from "../src/features/products/store/productsStore";
+import { HomePage } from "../../src/pages/HomePage";
+import * as authModule from "../../src/features/auth/store/authStore";
+import * as productsModule from "../../src/features/products/store/productsStore";
 
 // Mock auth store
-vi.mock("../src/features/auth/store/authStore");
+vi.mock("../../src/features/auth/store/authStore");
 
 // Mock products store
-vi.mock("../src/features/products/store/productsStore");
+vi.mock("../../src/features/products/store/productsStore");
 
 // Mock react-router-dom
 const mockNavigate = vi.fn();
@@ -225,23 +225,25 @@ describe("HomePage", () => {
     });
 
     it("should pass onFilter callback to ProductFilterBar", async () => {
-      const user = userEvent.setup();
-      vi.useFakeTimers();
-
+      const user = userEvent.setup({ delay: null }); // Disable delay for faster test
+      
       render(
         <BrowserRouter>
           <HomePage />
         </BrowserRouter>,
       );
 
-      const searchInput = screen.getByPlaceholderText(
-        /search by product name/i,
-      );
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/search by product name/i)).toBeInTheDocument();
+      });
+
+      const searchInput = screen.getByPlaceholderText(/search by product name/i);
       await user.type(searchInput, "test");
 
-      vi.advanceTimersByTime(300);
-
-      vi.useRealTimers();
+      // Check that ProductFilterBar rendered with filter
+      await waitFor(() => {
+        expect(searchInput).toHaveValue("test");
+      });
 
       expect(true).toBe(true);
     });
@@ -294,6 +296,7 @@ describe("HomePage", () => {
       (authModule.useAuthStore as any).mockReturnValue({
         ...mockAuthState,
         isAuthenticated: true,
+        refreshToken: "valid-refresh-token",
         user: {
           id: "1",
           nombre: "John",
@@ -309,7 +312,8 @@ describe("HomePage", () => {
         </BrowserRouter>,
       );
 
-      const logoutButton = screen.getByRole("button", { name: /logout/i });
+      // Wait for logout button to appear
+      const logoutButton = await screen.findByRole("button", { name: /logout/i });
       await user.click(logoutButton);
 
       expect(logoutMock).toHaveBeenCalled();
@@ -388,8 +392,7 @@ describe("HomePage", () => {
     });
 
     it("should update filters when filter values change", async () => {
-      const user = userEvent.setup();
-      vi.useFakeTimers();
+      const user = userEvent.setup({ delay: null }); // Disable delay for faster test
 
       render(
         <BrowserRouter>
@@ -397,14 +400,17 @@ describe("HomePage", () => {
         </BrowserRouter>,
       );
 
-      const searchInput = screen.getByPlaceholderText(
-        /search by product name/i,
-      );
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/search by product name/i)).toBeInTheDocument();
+      });
+
+      const searchInput = screen.getByPlaceholderText(/search by product name/i);
       await user.type(searchInput, "leche");
 
-      vi.advanceTimersByTime(300);
-
-      vi.useRealTimers();
+      // Check that the input value was updated
+      await waitFor(() => {
+        expect(searchInput).toHaveValue("leche");
+      });
 
       // Filter state should be updated
       expect(true).toBe(true);
@@ -439,7 +445,9 @@ describe("HomePage", () => {
         </BrowserRouter>,
       );
 
-      expect(screen.getByText(/food store/i)).toBeInTheDocument();
+      // Check for header "Food Store" specifically (h1 in nav, not the welcome heading)
+      const headers = screen.getAllByText(/food store/i);
+      expect(headers.length).toBeGreaterThan(0);
     });
 
     it("should handle missing user creado_en", () => {

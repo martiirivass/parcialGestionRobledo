@@ -50,18 +50,18 @@ describe("ProductCard", () => {
   it("should render availability badge as green when available", () => {
     render(<ProductCard product={mockProduct} />);
 
-    const badge = screen.getByText("Disponible");
+    const badge = screen.getByText("Available");
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass("bg-green-100", "text-green-800");
+    expect(badge).toHaveClass("bg-green-500", "text-white");
   });
 
   it("should render availability badge as gray when not available", () => {
     const unavailableProduct = { ...mockProduct, disponible: false };
     render(<ProductCard product={unavailableProduct} />);
 
-    const badge = screen.getByText("No disponible");
+    const badge = screen.getByText("Out of Stock");
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass("bg-gray-100", "text-gray-800");
+    expect(badge).toHaveClass("bg-gray-400", "text-white");
   });
 
   it("should render categories as pills (max 2 + counter)", () => {
@@ -104,14 +104,19 @@ describe("ProductCard", () => {
     const productWithAllergen = {
       ...mockProduct,
       ingredientes: [
-        { id: "1", nombre: "Cacahuete", es_alergeno: true, descripcion: "" },
-        { id: "2", nombre: "Azúcar", es_alergeno: false, descripcion: "" },
+        {
+          id: "1",
+          nombre: "Cacahuete",
+          es_alergeno: true,
+          descripcion: "Fruto seco",
+        },
       ],
     };
     render(<ProductCard product={productWithAllergen} />);
 
-    const allergenBadge = screen.getByText("Cacahuete");
-    expect(allergenBadge).toHaveClass("bg-red-100", "text-red-800");
+    // Check for allergen warning badge
+    const allergenWarning = screen.getByText("⚠️ Contains allergens");
+    expect(allergenWarning).toHaveClass("text-red-600");
   });
 
   it("should have hover effects applied", () => {

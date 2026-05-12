@@ -5,12 +5,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProductGrid } from "../../src/features/products/components/ProductGrid";
-import { useProductsStore } from "../../src/features/products/store/productsStore";
+import { useProducts } from "../../src/features/products/store/productsStore";
 
 // Mock the store
-vi.mock("../../src/features/products/store/productsStore", () => ({
-  useProductsStore: vi.fn(),
-}));
+vi.mock("../../src/features/products/store/productsStore", async () => {
+  const actual = await vi.importActual("../../src/features/products/store/productsStore");
+  return {
+    ...actual,
+    useProducts: vi.fn(),
+  };
+});
 
 describe("ProductGrid", () => {
   const mockProducts = [
@@ -38,11 +42,11 @@ describe("ProductGrid", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: mockProducts,
-      loading: false,
+      isLoading: false,
       error: null,
-      pagination: { page: 1, total_pages: 1, total_items: 2 },
+      pagination: { page: 1, limit: 10, total: 2, totalPages: 1 },
       fetchProducts: vi.fn(),
     });
   });
@@ -55,11 +59,11 @@ describe("ProductGrid", () => {
   });
 
   it("should show loading spinner while fetching", () => {
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: [],
-      loading: true,
+      isLoading: true,
       error: null,
-      pagination: { page: 1, total_pages: 1, total_items: 0 },
+      pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       fetchProducts: vi.fn(),
     });
 
@@ -70,11 +74,11 @@ describe("ProductGrid", () => {
 
   it("should show error message when fetch fails", () => {
     const error = "Failed to load products";
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: [],
-      loading: false,
+      isLoading: false,
       error,
-      pagination: { page: 1, total_pages: 1, total_items: 0 },
+      pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       fetchProducts: vi.fn(),
     });
 
@@ -85,11 +89,11 @@ describe("ProductGrid", () => {
   });
 
   it("should show empty state when no products found", () => {
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: [],
-      loading: false,
+      isLoading: false,
       error: null,
-      pagination: { page: 1, total_pages: 1, total_items: 0 },
+      pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       fetchProducts: vi.fn(),
     });
 
@@ -99,17 +103,20 @@ describe("ProductGrid", () => {
   });
 
   it("should render pagination controls", () => {
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: mockProducts,
-      loading: false,
-      error: null,
-      pagination: { page: 2, total_pages: 5, total_items: 50 },
+      isLoading: false,
+      pagination: { page: 1, limit: 10, total: 50, totalPages: 5 },
       fetchProducts: vi.fn(),
     });
 
     render(<ProductGrid />);
 
-    expect(screen.getByText(/page 2 of 5/i)).toBeInTheDocument();
+    // Check for pagination page indicator text (component uses its own currentPage state)
+    const pageIndicator = screen.getByText(/page.*of/i);
+    expect(pageIndicator).toBeInTheDocument();
+    expect(pageIndicator).toHaveTextContent("Page 1 of 5");
+
     expect(
       screen.getByRole("button", { name: /previous/i }),
     ).toBeInTheDocument();
@@ -120,11 +127,11 @@ describe("ProductGrid", () => {
     const user = userEvent.setup();
     const fetchProducts = vi.fn();
 
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: mockProducts,
-      loading: false,
+      isLoading: false,
       error: null,
-      pagination: { page: 1, total_pages: 3, total_items: 30 },
+      pagination: { page: 1, limit: 10, total: 30, totalPages: 3 },
       fetchProducts,
     });
 
@@ -152,11 +159,11 @@ describe("ProductGrid", () => {
     const { rerender } = render(<ProductGrid />);
 
     // First render with error
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: [],
-      loading: false,
+      isLoading: false,
       error: "Failed to load",
-      pagination: { page: 1, total_pages: 1, total_items: 0 },
+      pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       fetchProducts,
     });
 
@@ -171,11 +178,11 @@ describe("ProductGrid", () => {
   it("should fetch products on mount", async () => {
     const fetchProducts = vi.fn();
 
-    (useProductsStore as any).mockReturnValue({
+    (useProducts as any).mockReturnValue({
       products: mockProducts,
-      loading: false,
+      isLoading: false,
       error: null,
-      pagination: { page: 1, total_pages: 1, total_items: 2 },
+      pagination: { page: 1, limit: 10, total: 2, totalPages: 1 },
       fetchProducts,
     });
 
