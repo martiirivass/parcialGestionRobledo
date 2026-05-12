@@ -4,10 +4,10 @@
  * Handles fetching, filtering, loading, and error states
  */
 
-import React, { useEffect, useState } from 'react';
-import { ProductCard } from './ProductCard';
-import { ProductFilters, ProductPublic } from '../types';
-import { useProducts } from '../store/productsStore';
+import React, { useEffect, useState } from "react";
+import { ProductCard } from "./ProductCard";
+import { ProductFilters, ProductPublic } from "../types";
+import { useProducts } from "../store/productsStore";
 
 interface ProductGridProps {
   filters?: ProductFilters;
@@ -141,22 +141,19 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                   if (pagination.totalPages <= 5) {
                     pageNumber = i + 1;
                   } else {
-                    const startPage = Math.max(
-                      1,
-                      currentPage - 2
-                    );
+                    const startPage = Math.max(1, currentPage - 2);
                     pageNumber = startPage + i;
                   }
                   return pageNumber;
-                }
+                },
               ).map((pageNumber) => (
                 <button
                   key={pageNumber}
                   onClick={() => setCurrentPage(pageNumber)}
                   className={`px-3 py-1 rounded transition-colors ${
                     currentPage === pageNumber
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                   }`}
                 >
                   {pageNumber}

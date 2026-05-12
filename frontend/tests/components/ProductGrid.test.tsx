@@ -1,38 +1,38 @@
 /**
  * ProductGrid Component Tests
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { ProductGrid } from '../../src/features/products/components/ProductGrid';
-import { useProductsStore } from '../../src/features/products/store/productsStore';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ProductGrid } from "../../src/features/products/components/ProductGrid";
+import { useProductsStore } from "../../src/features/products/store/productsStore";
 
 // Mock the store
-vi.mock('../../src/features/products/store/productsStore', () => ({
+vi.mock("../../src/features/products/store/productsStore", () => ({
   useProductsStore: vi.fn(),
 }));
 
-describe('ProductGrid', () => {
+describe("ProductGrid", () => {
   const mockProducts = [
     {
-      id: '1',
-      nombre: 'Leche',
+      id: "1",
+      nombre: "Leche",
       precio: 250,
       disponible: true,
-      imagen_url: 'https://example.com/leche.jpg',
+      imagen_url: "https://example.com/leche.jpg",
       categorias: [],
       ingredientes: [],
-      descripcion: 'Leche fresca',
+      descripcion: "Leche fresca",
     },
     {
-      id: '2',
-      nombre: 'Queso',
+      id: "2",
+      nombre: "Queso",
       precio: 500,
       disponible: true,
-      imagen_url: 'https://example.com/queso.jpg',
+      imagen_url: "https://example.com/queso.jpg",
       categorias: [],
       ingredientes: [],
-      descripcion: 'Queso cheddar',
+      descripcion: "Queso cheddar",
     },
   ];
 
@@ -47,14 +47,14 @@ describe('ProductGrid', () => {
     });
   });
 
-  it('should render product cards for each product', () => {
+  it("should render product cards for each product", () => {
     render(<ProductGrid />);
 
-    expect(screen.getByText('Leche')).toBeInTheDocument();
-    expect(screen.getByText('Queso')).toBeInTheDocument();
+    expect(screen.getByText("Leche")).toBeInTheDocument();
+    expect(screen.getByText("Queso")).toBeInTheDocument();
   });
 
-  it('should show loading spinner while fetching', () => {
+  it("should show loading spinner while fetching", () => {
     (useProductsStore as any).mockReturnValue({
       products: [],
       loading: true,
@@ -68,8 +68,8 @@ describe('ProductGrid', () => {
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
-  it('should show error message when fetch fails', () => {
-    const error = 'Failed to load products';
+  it("should show error message when fetch fails", () => {
+    const error = "Failed to load products";
     (useProductsStore as any).mockReturnValue({
       products: [],
       loading: false,
@@ -81,10 +81,10 @@ describe('ProductGrid', () => {
     render(<ProductGrid />);
 
     expect(screen.getByText(error)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
   });
 
-  it('should show empty state when no products found', () => {
+  it("should show empty state when no products found", () => {
     (useProductsStore as any).mockReturnValue({
       products: [],
       loading: false,
@@ -95,12 +95,10 @@ describe('ProductGrid', () => {
 
     render(<ProductGrid />);
 
-    expect(
-      screen.getByText(/no products found/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/no products found/i)).toBeInTheDocument();
   });
 
-  it('should render pagination controls', () => {
+  it("should render pagination controls", () => {
     (useProductsStore as any).mockReturnValue({
       products: mockProducts,
       loading: false,
@@ -112,11 +110,13 @@ describe('ProductGrid', () => {
     render(<ProductGrid />);
 
     expect(screen.getByText(/page 2 of 5/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /previous/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
   });
 
-  it('should call fetchProducts with new page on pagination', async () => {
+  it("should call fetchProducts with new page on pagination", async () => {
     const user = userEvent.setup();
     const fetchProducts = vi.fn();
 
@@ -130,20 +130,22 @@ describe('ProductGrid', () => {
 
     render(<ProductGrid />);
 
-    const nextButton = screen.getByRole('button', { name: /next/i });
+    const nextButton = screen.getByRole("button", { name: /next/i });
     await user.click(nextButton);
 
-    expect(fetchProducts).toHaveBeenCalledWith(expect.objectContaining({ page: 2 }));
+    expect(fetchProducts).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 2 }),
+    );
   });
 
-  it('should apply responsive grid layout', () => {
+  it("should apply responsive grid layout", () => {
     const { container } = render(<ProductGrid />);
     const grid = container.querySelector('[class*="grid"]');
 
-    expect(grid).toHaveClass('grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4');
+    expect(grid).toHaveClass("grid-cols-2", "md:grid-cols-3", "lg:grid-cols-4");
   });
 
-  it('should call retry when error retry button is clicked', async () => {
+  it("should call retry when error retry button is clicked", async () => {
     const user = userEvent.setup();
     const fetchProducts = vi.fn();
 
@@ -153,20 +155,20 @@ describe('ProductGrid', () => {
     (useProductsStore as any).mockReturnValue({
       products: [],
       loading: false,
-      error: 'Failed to load',
+      error: "Failed to load",
       pagination: { page: 1, total_pages: 1, total_items: 0 },
       fetchProducts,
     });
 
     rerender(<ProductGrid />);
 
-    const retryButton = screen.getByRole('button', { name: /retry/i });
+    const retryButton = screen.getByRole("button", { name: /retry/i });
     await user.click(retryButton);
 
     expect(fetchProducts).toHaveBeenCalled();
   });
 
-  it('should fetch products on mount', async () => {
+  it("should fetch products on mount", async () => {
     const fetchProducts = vi.fn();
 
     (useProductsStore as any).mockReturnValue({

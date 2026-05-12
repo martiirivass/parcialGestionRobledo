@@ -1,9 +1,9 @@
 /**
  * ProtectedRoute - HOC for protecting routes that require authentication
  */
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

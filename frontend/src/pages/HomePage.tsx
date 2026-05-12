@@ -1,19 +1,19 @@
 /**
  * HomePage - Home page with product catalog
  */
-import React, { useState } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../features/auth/store/authStore';
-import { ProductFilterBar } from '../features/products/components/ProductFilterBar';
-import { ProductGrid } from '../features/products/components/ProductGrid';
-import { ProductPublic, ProductFilters } from '../features/products/types';
+import React, { useState } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../features/auth/store/authStore";
+import { ProductFilterBar } from "../features/products/components/ProductFilterBar";
+import { ProductGrid } from "../features/products/components/ProductGrid";
+import { ProductPublic, ProductFilters } from "../features/products/types";
 
 export const HomePage: React.FC = () => {
   const { isAuthenticated, user, logout, refreshToken } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<ProductFilters>({
-    categoria_id: searchParams.get('category') || undefined,
+    categoria_id: searchParams.get("category") || undefined,
   });
 
   const handleLogout = async () => {
@@ -80,8 +80,10 @@ export const HomePage: React.FC = () => {
         {isAuthenticated && (
           <div className="bg-blue-50 p-4 rounded-lg mb-8">
             <p className="text-blue-800">
-              <span className="font-semibold">Member since:</span>{' '}
-              {user?.creado_en ? new Date(user.creado_en).toLocaleDateString() : 'N/A'}
+              <span className="font-semibold">Member since:</span>{" "}
+              {user?.creado_en
+                ? new Date(user.creado_en).toLocaleDateString()
+                : "N/A"}
             </p>
           </div>
         )}

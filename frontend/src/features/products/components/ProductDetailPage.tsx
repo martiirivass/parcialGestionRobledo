@@ -4,9 +4,9 @@
  * Accessible via /products/:id route
  */
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useProducts } from '../store/productsStore';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useProducts } from "../store/productsStore";
 
 /**
  * ProductDetailPage component
@@ -36,7 +36,7 @@ export const ProductDetailPage: React.FC = () => {
     setExcludedIngredients((prev) =>
       prev.includes(ingredientId)
         ? prev.filter((id) => id !== ingredientId)
-        : [...prev, ingredientId]
+        : [...prev, ingredientId],
     );
   };
 
@@ -45,11 +45,11 @@ export const ProductDetailPage: React.FC = () => {
    */
   const handleAddToCart = () => {
     // TODO: Integrate with cart store
-    console.log('Add to cart:', {
+    console.log("Add to cart:", {
       productId: currentProduct?.id,
       excludedIngredients,
     });
-    alert('Product added to cart! (Placeholder)');
+    alert("Product added to cart! (Placeholder)");
   };
 
   /**
@@ -72,10 +72,12 @@ export const ProductDetailPage: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center">
         <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6 max-w-md">
           <p className="font-bold mb-2">Product not found</p>
-          <p className="text-sm">{error || 'The product you are looking for does not exist.'}</p>
+          <p className="text-sm">
+            {error || "The product you are looking for does not exist."}
+          </p>
         </div>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
         >
           Back to Home
@@ -90,18 +92,20 @@ export const ProductDetailPage: React.FC = () => {
   // Placeholder image
   const imageUrl =
     currentProduct.imagen_url ||
-    'https://via.placeholder.com/600x600?text=' +
+    "https://via.placeholder.com/600x600?text=" +
       encodeURIComponent(currentProduct.nombre);
 
   // Separate allergens and regular ingredients
   const allergens = currentProduct.ingredientes.filter((i) => i.es_alergeno);
-  const regularIngredients = currentProduct.ingredientes.filter((i) => !i.es_alergeno);
+  const regularIngredients = currentProduct.ingredientes.filter(
+    (i) => !i.es_alergeno,
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Back Button */}
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate("/")}
         className="mb-6 px-4 py-2 text-gray-600 hover:text-gray-900 flex items-center gap-2"
       >
         ← Back to Products
@@ -117,7 +121,7 @@ export const ProductDetailPage: React.FC = () => {
               className="w-full h-auto rounded-lg object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
-                  'https://via.placeholder.com/600x600?text=' +
+                  "https://via.placeholder.com/600x600?text=" +
                   encodeURIComponent(currentProduct.nombre);
               }}
             />
@@ -126,12 +130,10 @@ export const ProductDetailPage: React.FC = () => {
             <div className="mt-4">
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-semibold text-white ${
-                  currentProduct.disponible
-                    ? 'bg-green-500'
-                    : 'bg-gray-400'
+                  currentProduct.disponible ? "bg-green-500" : "bg-gray-400"
                 }`}
               >
-                {currentProduct.disponible ? '✓ Available' : '✗ Out of Stock'}
+                {currentProduct.disponible ? "✓ Available" : "✗ Out of Stock"}
               </span>
             </div>
           </div>
@@ -154,23 +156,24 @@ export const ProductDetailPage: React.FC = () => {
             )}
 
             {/* Categories */}
-            {currentProduct.categorias && currentProduct.categorias.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                  Categories
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {currentProduct.categorias.map((cat) => (
-                    <span
-                      key={cat.id}
-                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                    >
-                      {cat.nombre}
-                    </span>
-                  ))}
+            {currentProduct.categorias &&
+              currentProduct.categorias.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                    Categories
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {currentProduct.categorias.map((cat) => (
+                      <span
+                        key={cat.id}
+                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                      >
+                        {cat.nombre}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Allergens Section */}
             {allergens.length > 0 && (
@@ -234,14 +237,18 @@ export const ProductDetailPage: React.FC = () => {
               disabled={!currentProduct.disponible}
               className="w-full mt-auto px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
-              {currentProduct.disponible ? 'Add to Cart' : 'Out of Stock'}
+              {currentProduct.disponible ? "Add to Cart" : "Out of Stock"}
             </button>
 
             {/* Selected Exclusions Info */}
             {excludedIngredients.length > 0 && (
               <div className="mt-4 p-3 bg-blue-50 rounded text-sm text-blue-800">
-                <p className="font-semibold">Selected exclusions: {excludedIngredients.length}</p>
-                <p className="text-xs mt-1">These ingredients will be noted in your order.</p>
+                <p className="font-semibold">
+                  Selected exclusions: {excludedIngredients.length}
+                </p>
+                <p className="text-xs mt-1">
+                  These ingredients will be noted in your order.
+                </p>
               </div>
             )}
           </div>

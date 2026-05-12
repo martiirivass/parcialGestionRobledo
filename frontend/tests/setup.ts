@@ -3,9 +3,9 @@
  * Initializes test environment with cleanup, mocks, and global utilities
  */
 
-import { expect, afterEach, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { expect, afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 // Cleanup after each test
 afterEach(() => {
@@ -22,9 +22,9 @@ const localStorageMock = {
 global.localStorage = localStorageMock as any;
 
 // Mock window.matchMedia for responsive tests
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,

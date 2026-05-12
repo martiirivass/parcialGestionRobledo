@@ -4,9 +4,9 @@
  * Responsive design for mobile and desktop
  */
 
-import React, { useEffect, useState } from 'react';
-import { ProductFilters, Categoria, Ingrediente } from '../types';
-import * as api from '../api';
+import React, { useEffect, useState } from "react";
+import { ProductFilters, Categoria, Ingrediente } from "../types";
+import * as api from "../api";
 
 interface ProductFilterBarProps {
   onFilter: (filters: ProductFilters) => void;
@@ -22,10 +22,12 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   onFilter,
   categorias: initialCategorias,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [excludedAllergens, setExcludedAllergens] = useState<string[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>(initialCategorias || []);
+  const [categorias, setCategorias] = useState<Categoria[]>(
+    initialCategorias || [],
+  );
   const [allergens, setAllergens] = useState<Ingrediente[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
@@ -37,13 +39,13 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
       if (initialCategorias) {
         setCategorias(initialCategorias);
       }
-      
+
       setIsLoadingData(true);
       try {
         // Fetch products to extract unique allergens
         const response = await api.getProducts({ limit: 100 });
         const uniqueAllergens = new Map<string, Ingrediente>();
-        
+
         response.data.forEach((product) => {
           product.ingredientes.forEach((ing) => {
             if (ing.es_alergeno && !uniqueAllergens.has(ing.id)) {
@@ -51,10 +53,10 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
             }
           });
         });
-        
+
         setAllergens(Array.from(uniqueAllergens.values()));
       } catch (error) {
-        console.error('Error loading filter data:', error);
+        console.error("Error loading filter data:", error);
       } finally {
         setIsLoadingData(false);
       }
@@ -68,19 +70,19 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
    */
   const applyFilters = () => {
     const filters: ProductFilters = {};
-    
+
     if (searchQuery.trim()) {
       filters.search = searchQuery.trim();
     }
-    
+
     if (selectedCategory) {
       filters.categoria_id = selectedCategory;
     }
-    
+
     if (excludedAllergens.length > 0) {
       filters.excluirAlergenos = excludedAllergens;
     }
-    
+
     onFilter(filters);
   };
 
@@ -105,7 +107,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
     setExcludedAllergens((prev) =>
       prev.includes(allergenId)
         ? prev.filter((id) => id !== allergenId)
-        : [...prev, allergenId]
+        : [...prev, allergenId],
     );
   };
 
@@ -113,8 +115,8 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
    * Handle reset filters
    */
   const handleReset = () => {
-    setSearchQuery('');
-    setSelectedCategory('');
+    setSearchQuery("");
+    setSelectedCategory("");
     setExcludedAllergens([]);
     onFilter({});
   };
@@ -209,7 +211,9 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
       )}
 
       {isLoadingData && (
-        <div className="mt-4 text-sm text-gray-500">Loading filter options...</div>
+        <div className="mt-4 text-sm text-gray-500">
+          Loading filter options...
+        </div>
       )}
     </div>
   );

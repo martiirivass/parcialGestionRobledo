@@ -4,13 +4,9 @@
  * Ephemeral state - no persistence, only in memory
  */
 
-import { create } from 'zustand';
-import {
-  ProductPublic,
-  PaginationResponse,
-  ProductFilters,
-} from '../types';
-import * as api from '../api';
+import { create } from "zustand";
+import { ProductPublic, PaginationResponse, ProductFilters } from "../types";
+import * as api from "../api";
 
 /**
  * Store state interface
@@ -19,24 +15,26 @@ interface ProductsState {
   // Data
   products: ProductPublic[];
   currentProduct: ProductPublic | null;
-  
+
   // UI state
   isLoading: boolean;
   error: string | null;
-  
+
   // Pagination
   pagination: PaginationResponse & {
     page: number;
     limit: number;
   };
-  
+
   // Actions
   fetchProducts: (filters?: ProductFilters) => Promise<void>;
   fetchProductById: (id: string) => Promise<void>;
   setCurrentProduct: (product: ProductPublic | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setPagination: (pagination: PaginationResponse & { page: number; limit: number }) => void;
+  setPagination: (
+    pagination: PaginationResponse & { page: number; limit: number },
+  ) => void;
   clearProducts: () => void;
 }
 
@@ -63,10 +61,10 @@ const useProductsStore = create<ProductsState>((set) => ({
    */
   fetchProducts: async (filters?: ProductFilters) => {
     set({ isLoading: true, error: null });
-    
+
     try {
       const response = await api.getProducts(filters);
-      
+
       set({
         products: response.data,
         pagination: {
@@ -78,7 +76,8 @@ const useProductsStore = create<ProductsState>((set) => ({
         isLoading: false,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch products';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch products";
       set({
         error: errorMessage,
         isLoading: false,
@@ -92,7 +91,7 @@ const useProductsStore = create<ProductsState>((set) => ({
    */
   fetchProductById: async (id: string) => {
     set({ isLoading: true, error: null });
-    
+
     try {
       const product = await api.getProductById(id);
       set({
@@ -100,7 +99,8 @@ const useProductsStore = create<ProductsState>((set) => ({
         isLoading: false,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch product';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch product";
       set({
         error: errorMessage,
         isLoading: false,
@@ -135,7 +135,9 @@ const useProductsStore = create<ProductsState>((set) => ({
   /**
    * Update pagination state
    */
-  setPagination: (pagination: PaginationResponse & { page: number; limit: number }) => {
+  setPagination: (
+    pagination: PaginationResponse & { page: number; limit: number },
+  ) => {
     set({ pagination });
   },
 

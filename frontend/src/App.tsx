@@ -1,21 +1,21 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { LoginPage } from './pages/LoginPage'
-import { RegisterPage } from './pages/RegisterPage'
-import { HomePage } from './pages/HomePage'
-import { ProductDetailPage } from './features/products/components/ProductDetailPage'
-import { ProtectedRoute } from './features/auth/components/ProtectedRoute'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { HomePage } from "./pages/HomePage";
+import { ProductDetailPage } from "./features/products/components/ProductDetailPage";
+import { ProtectedRoute } from "./features/auth/components/ProtectedRoute";
 
 // Placeholder pages for other features
 function CatalogPage() {
-  return <h1 className="text-2xl font-bold p-4">Catalog</h1>
+  return <h1 className="text-2xl font-bold p-4">Catalog</h1>;
 }
 
 function CartPage() {
-  return <h1 className="text-2xl font-bold p-4">Cart</h1>
+  return <h1 className="text-2xl font-bold p-4">Cart</h1>;
 }
 
 function OrdersPage() {
-  return <h1 className="text-2xl font-bold p-4">My Orders</h1>
+  return <h1 className="text-2xl font-bold p-4">My Orders</h1>;
 }
 
 export default function App() {
@@ -41,7 +41,7 @@ export default function App() {
           </div>
         </div>
       </nav>
-      
+
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/catalog" element={<CatalogPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
-          
+
           {/* Protected routes */}
           <Route
             path="/cart"
@@ -69,11 +69,11 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          
+
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
-  )
+  );
 }

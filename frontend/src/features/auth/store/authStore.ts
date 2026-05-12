@@ -2,8 +2,8 @@
  * Authentication Store - Zustand with persistence
  * Manages auth state, tokens, and user information
  */
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface User {
   id: number;
@@ -100,7 +100,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       // Only persist tokens and basic user info, not transient state
       partialize: (state) => ({
         user: state.user,
@@ -108,6 +108,6 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

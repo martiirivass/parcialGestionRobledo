@@ -4,8 +4,8 @@
  * Memoized for performance optimization
  */
 
-import React from 'react';
-import { ProductPublic } from '../types';
+import React from "react";
+import { ProductPublic } from "../types";
 
 interface ProductCardProps {
   product: ProductPublic;
@@ -31,7 +31,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   // Placeholder image if none provided
   const imageUrl =
     product.imagen_url ||
-    'https://via.placeholder.com/300x300?text=' +
+    "https://via.placeholder.com/300x300?text=" +
       encodeURIComponent(product.nombre);
 
   return (
@@ -47,7 +47,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
-              'https://via.placeholder.com/300x300?text=' +
+              "https://via.placeholder.com/300x300?text=" +
               encodeURIComponent(product.nombre);
           }}
         />
@@ -56,12 +56,10 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         <div className="absolute top-3 right-3">
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
-              product.disponible
-                ? 'bg-green-500'
-                : 'bg-gray-400'
+              product.disponible ? "bg-green-500" : "bg-gray-400"
             }`}
           >
-            {product.disponible ? 'Available' : 'Out of Stock'}
+            {product.disponible ? "Available" : "Out of Stock"}
           </span>
         </div>
       </div>
@@ -98,11 +96,12 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
         </p>
 
         {/* Allergen Info if exists */}
-        {product.ingredientes && product.ingredientes.some((i) => i.es_alergeno) && (
-          <div className="text-xs text-red-600 font-semibold">
-            ⚠️ Contains allergens
-          </div>
-        )}
+        {product.ingredientes &&
+          product.ingredientes.some((i) => i.es_alergeno) && (
+            <div className="text-xs text-red-600 font-semibold">
+              ⚠️ Contains allergens
+            </div>
+          )}
       </div>
     </div>
   );

@@ -3,14 +3,14 @@
  * Tests initialization, setters, and API integration
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import useProductsStore from '../src/features/products/store/productsStore';
-import * as api from '../src/features/products/api';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import useProductsStore from "../src/features/products/store/productsStore";
+import * as api from "../src/features/products/api";
 
 // Mock the API module
-vi.mock('../src/features/products/api');
+vi.mock("../src/features/products/api");
 
-describe('Products Store', () => {
+describe("Products Store", () => {
   beforeEach(() => {
     // Reset store to initial state
     useProductsStore.setState({
@@ -30,8 +30,8 @@ describe('Products Store', () => {
     vi.clearAllMocks();
   });
 
-  describe('Initialization', () => {
-    it('should have correct initial state', () => {
+  describe("Initialization", () => {
+    it("should have correct initial state", () => {
       const store = useProductsStore.getState();
 
       expect(store.products).toEqual([]);
@@ -47,37 +47,37 @@ describe('Products Store', () => {
     });
   });
 
-  describe('Setters', () => {
-    it('setLoading should update isLoading state', () => {
+  describe("Setters", () => {
+    it("setLoading should update isLoading state", () => {
       const store = useProductsStore.getState();
-      
+
       store.setLoading(true);
       expect(useProductsStore.getState().isLoading).toBe(true);
-      
+
       store.setLoading(false);
       expect(useProductsStore.getState().isLoading).toBe(false);
     });
 
-    it('setError should update error state', () => {
+    it("setError should update error state", () => {
       const store = useProductsStore.getState();
-      
-      store.setError('Test error');
-      expect(useProductsStore.getState().error).toBe('Test error');
-      
+
+      store.setError("Test error");
+      expect(useProductsStore.getState().error).toBe("Test error");
+
       store.setError(null);
       expect(useProductsStore.getState().error).toBeNull();
     });
 
-    it('setCurrentProduct should update currentProduct state', () => {
+    it("setCurrentProduct should update currentProduct state", () => {
       const store = useProductsStore.getState();
       const mockProduct = {
-        id: '1',
-        nombre: 'Test Product',
-        precio: '100.00',
+        id: "1",
+        nombre: "Test Product",
+        precio: "100.00",
         disponible: true,
         categorias: [],
         ingredientes: [],
-        creado_en: '2026-05-11T00:00:00Z',
+        creado_en: "2026-05-11T00:00:00Z",
       };
 
       store.setCurrentProduct(mockProduct);
@@ -87,7 +87,7 @@ describe('Products Store', () => {
       expect(useProductsStore.getState().currentProduct).toBeNull();
     });
 
-    it('setPagination should update pagination state', () => {
+    it("setPagination should update pagination state", () => {
       const store = useProductsStore.getState();
       const newPagination = {
         page: 2,
@@ -100,20 +100,20 @@ describe('Products Store', () => {
       expect(useProductsStore.getState().pagination).toEqual(newPagination);
     });
 
-    it('clearProducts should reset store to initial state', () => {
+    it("clearProducts should reset store to initial state", () => {
       const store = useProductsStore.getState();
-      
+
       // Pollute state
       store.setLoading(true);
-      store.setError('Some error');
+      store.setError("Some error");
       store.setCurrentProduct({
-        id: '1',
-        nombre: 'Test',
-        precio: '100.00',
+        id: "1",
+        nombre: "Test",
+        precio: "100.00",
         disponible: true,
         categorias: [],
         ingredientes: [],
-        creado_en: '2026-05-11T00:00:00Z',
+        creado_en: "2026-05-11T00:00:00Z",
       });
 
       store.clearProducts();
@@ -126,27 +126,27 @@ describe('Products Store', () => {
     });
   });
 
-  describe('fetchProducts', () => {
-    it('should fetch products and update state correctly', async () => {
+  describe("fetchProducts", () => {
+    it("should fetch products and update state correctly", async () => {
       const mockResponse = {
         data: [
           {
-            id: '1',
-            nombre: 'Product 1',
-            precio: '50.00',
+            id: "1",
+            nombre: "Product 1",
+            precio: "50.00",
             disponible: true,
             categorias: [],
             ingredientes: [],
-            creado_en: '2026-05-11T00:00:00Z',
+            creado_en: "2026-05-11T00:00:00Z",
           },
           {
-            id: '2',
-            nombre: 'Product 2',
-            precio: '75.00',
+            id: "2",
+            nombre: "Product 2",
+            precio: "75.00",
             disponible: true,
             categorias: [],
             ingredientes: [],
-            creado_en: '2026-05-11T00:00:00Z',
+            creado_en: "2026-05-11T00:00:00Z",
           },
         ],
         pagination: {
@@ -169,25 +169,32 @@ describe('Products Store', () => {
       expect(state.error).toBeNull();
     });
 
-    it('should set loading state during fetch', async () => {
+    it("should set loading state during fetch", async () => {
       (api.getProducts as any).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          data: [],
-          pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
-        }), 10))
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  data: [],
+                  pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
+                }),
+              10,
+            ),
+          ),
       );
 
       const store = useProductsStore.getState();
       const fetchPromise = store.fetchProducts();
-      
+
       expect(useProductsStore.getState().isLoading).toBe(true);
-      
+
       await fetchPromise;
       expect(useProductsStore.getState().isLoading).toBe(false);
     });
 
-    it('should handle API errors correctly', async () => {
-      const errorMessage = 'API Error';
+    it("should handle API errors correctly", async () => {
+      const errorMessage = "API Error";
       (api.getProducts as any).mockRejectedValue(new Error(errorMessage));
 
       const store = useProductsStore.getState();
@@ -199,7 +206,7 @@ describe('Products Store', () => {
       expect(state.products).toEqual([]);
     });
 
-    it('should pass filters to API', async () => {
+    it("should pass filters to API", async () => {
       const mockResponse = {
         data: [],
         pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
@@ -211,8 +218,8 @@ describe('Products Store', () => {
       const filters = {
         page: 2,
         limit: 20,
-        categoria_id: 'cat-1',
-        search: 'pasta',
+        categoria_id: "cat-1",
+        search: "pasta",
       };
 
       await store.fetchProducts(filters);
@@ -221,22 +228,22 @@ describe('Products Store', () => {
     });
   });
 
-  describe('fetchProductById', () => {
-    it('should fetch product by ID and update currentProduct', async () => {
+  describe("fetchProductById", () => {
+    it("should fetch product by ID and update currentProduct", async () => {
       const mockProduct = {
-        id: '1',
-        nombre: 'Product 1',
-        precio: '100.00',
+        id: "1",
+        nombre: "Product 1",
+        precio: "100.00",
         disponible: true,
-        categorias: [{ id: 'cat-1', nombre: 'Pasta' }],
-        ingredientes: [{ id: 'ing-1', nombre: 'Tomate', es_alergeno: false }],
-        creado_en: '2026-05-11T00:00:00Z',
+        categorias: [{ id: "cat-1", nombre: "Pasta" }],
+        ingredientes: [{ id: "ing-1", nombre: "Tomate", es_alergeno: false }],
+        creado_en: "2026-05-11T00:00:00Z",
       };
 
       (api.getProductById as any).mockResolvedValue(mockProduct);
 
       const store = useProductsStore.getState();
-      await store.fetchProductById('1');
+      await store.fetchProductById("1");
 
       const state = useProductsStore.getState();
       expect(state.currentProduct).toEqual(mockProduct);
@@ -244,34 +251,41 @@ describe('Products Store', () => {
       expect(state.error).toBeNull();
     });
 
-    it('should set loading state during fetch', async () => {
+    it("should set loading state during fetch", async () => {
       (api.getProductById as any).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({
-          id: '1',
-          nombre: 'Product',
-          precio: '100.00',
-          disponible: true,
-          categorias: [],
-          ingredientes: [],
-          creado_en: '2026-05-11T00:00:00Z',
-        }), 10))
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  id: "1",
+                  nombre: "Product",
+                  precio: "100.00",
+                  disponible: true,
+                  categorias: [],
+                  ingredientes: [],
+                  creado_en: "2026-05-11T00:00:00Z",
+                }),
+              10,
+            ),
+          ),
       );
 
       const store = useProductsStore.getState();
-      const fetchPromise = store.fetchProductById('1');
-      
+      const fetchPromise = store.fetchProductById("1");
+
       expect(useProductsStore.getState().isLoading).toBe(true);
-      
+
       await fetchPromise;
       expect(useProductsStore.getState().isLoading).toBe(false);
     });
 
-    it('should handle API errors and clear currentProduct', async () => {
-      const errorMessage = 'Product not found';
+    it("should handle API errors and clear currentProduct", async () => {
+      const errorMessage = "Product not found";
       (api.getProductById as any).mockRejectedValue(new Error(errorMessage));
 
       const store = useProductsStore.getState();
-      await store.fetchProductById('1');
+      await store.fetchProductById("1");
 
       const state = useProductsStore.getState();
       expect(state.error).toBe(errorMessage);
@@ -279,23 +293,23 @@ describe('Products Store', () => {
       expect(state.currentProduct).toBeNull();
     });
 
-    it('should call API with correct product ID', async () => {
+    it("should call API with correct product ID", async () => {
       const mockProduct = {
-        id: 'prod-123',
-        nombre: 'Product',
-        precio: '100.00',
+        id: "prod-123",
+        nombre: "Product",
+        precio: "100.00",
         disponible: true,
         categorias: [],
         ingredientes: [],
-        creado_en: '2026-05-11T00:00:00Z',
+        creado_en: "2026-05-11T00:00:00Z",
       };
 
       (api.getProductById as any).mockResolvedValue(mockProduct);
 
       const store = useProductsStore.getState();
-      await store.fetchProductById('prod-123');
+      await store.fetchProductById("prod-123");
 
-      expect(api.getProductById).toHaveBeenCalledWith('prod-123');
+      expect(api.getProductById).toHaveBeenCalledWith("prod-123");
     });
   });
 });

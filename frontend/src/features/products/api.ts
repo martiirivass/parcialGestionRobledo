@@ -4,7 +4,7 @@
  * Uses centralized apiClient with JWT interceptors
  */
 
-import apiClient from '../../shared/api/axios';
+import apiClient from "../../shared/api/axios";
 import {
   ProductPublic,
   ProductCreate,
@@ -12,7 +12,7 @@ import {
   ProductListResponse,
   ProductFilters,
   Product,
-} from './types';
+} from "./types";
 
 /**
  * Fetch list of products with pagination and filters
@@ -20,27 +20,30 @@ import {
  * @returns Promise containing paginated product list
  * @throws Error if request fails
  */
-export async function getProducts(filters: ProductFilters = {}): Promise<ProductListResponse> {
+export async function getProducts(
+  filters: ProductFilters = {},
+): Promise<ProductListResponse> {
   try {
     const params = new URLSearchParams();
-    
-    if (filters.page) params.append('page', String(filters.page));
-    if (filters.limit) params.append('limit', String(filters.limit));
-    if (filters.categoria_id) params.append('categoria_id', filters.categoria_id);
-    if (filters.search) params.append('busqueda', filters.search);
+
+    if (filters.page) params.append("page", String(filters.page));
+    if (filters.limit) params.append("limit", String(filters.limit));
+    if (filters.categoria_id)
+      params.append("categoria_id", filters.categoria_id);
+    if (filters.search) params.append("busqueda", filters.search);
     if (filters.excluirAlergenos && filters.excluirAlergenos.length > 0) {
       filters.excluirAlergenos.forEach((id) => {
-        params.append('excluirAlergenos', id);
+        params.append("excluirAlergenos", id);
       });
     }
 
-    const response = await apiClient.get<ProductListResponse>('/productos', {
+    const response = await apiClient.get<ProductListResponse>("/productos", {
       params,
     });
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error("Error fetching products:", error);
     throw error;
   }
 }
@@ -69,10 +72,10 @@ export async function getProductById(id: string): Promise<ProductPublic> {
  */
 export async function createProduct(data: ProductCreate): Promise<Product> {
   try {
-    const response = await apiClient.post<Product>('/productos', data);
+    const response = await apiClient.post<Product>("/productos", data);
     return response.data;
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error("Error creating product:", error);
     throw error;
   }
 }
@@ -84,7 +87,10 @@ export async function createProduct(data: ProductCreate): Promise<Product> {
  * @returns Promise containing updated product
  * @throws Error if product not found, validation fails, or user not authorized
  */
-export async function updateProduct(id: string, data: ProductUpdate): Promise<Product> {
+export async function updateProduct(
+  id: string,
+  data: ProductUpdate,
+): Promise<Product> {
   try {
     const response = await apiClient.put<Product>(`/productos/${id}`, data);
     return response.data;
@@ -119,7 +125,7 @@ export async function deleteProduct(id: string): Promise<void> {
  */
 export async function updateProductStock(
   id: string,
-  cantidad: number
+  cantidad: number,
 ): Promise<Product> {
   try {
     const response = await apiClient.patch<Product>(`/productos/${id}/stock`, {
@@ -142,12 +148,15 @@ export async function updateProductStock(
  */
 export async function assignCategories(
   id: string,
-  categoria_ids: string[]
+  categoria_ids: string[],
 ): Promise<Product> {
   try {
-    const response = await apiClient.put<Product>(`/productos/${id}/categorias`, {
-      categoria_ids,
-    });
+    const response = await apiClient.put<Product>(
+      `/productos/${id}/categorias`,
+      {
+        categoria_ids,
+      },
+    );
     return response.data;
   } catch (error) {
     console.error(`Error assigning categories to product ${id}:`, error);
@@ -165,12 +174,15 @@ export async function assignCategories(
  */
 export async function assignIngredients(
   id: string,
-  ingrediente_ids: string[]
+  ingrediente_ids: string[],
 ): Promise<Product> {
   try {
-    const response = await apiClient.put<Product>(`/productos/${id}/ingredientes`, {
-      ingrediente_ids,
-    });
+    const response = await apiClient.put<Product>(
+      `/productos/${id}/ingredientes`,
+      {
+        ingrediente_ids,
+      },
+    );
     return response.data;
   } catch (error) {
     console.error(`Error assigning ingredients to product ${id}:`, error);

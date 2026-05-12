@@ -1,8 +1,8 @@
 /**
  * Cart store using Zustand with persistence
  */
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface Producto {
   id: number;
@@ -26,7 +26,11 @@ interface CartState {
 }
 
 interface CartActions {
-  addItem: (producto: Producto, cantidad: number, personalizacion?: number[]) => void;
+  addItem: (
+    producto: Producto,
+    cantidad: number,
+    personalizacion?: number[],
+  ) => void;
   removeItem: (productoId: number) => void;
   updateQuantity: (productoId: number, cantidad: number) => void;
   clearCart: () => void;
@@ -41,14 +45,14 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       // State
       items: [],
-      
+
       // Actions
       addItem: (producto, cantidad, personalizacion = []) => {
         const items = get().items;
         const existingIndex = items.findIndex(
-          (item) => item.productoId === producto.id
+          (item) => item.productoId === producto.id,
         );
-        
+
         if (existingIndex >= 0) {
           // Update existing item quantity
           const newItems = [...items];
@@ -69,38 +73,38 @@ export const useCartStore = create<CartStore>()(
           });
         }
       },
-      
+
       removeItem: (productoId) => {
         set({
           items: get().items.filter((item) => item.productoId !== productoId),
         });
       },
-      
+
       updateQuantity: (productoId, cantidad) => {
         const items = get().items.map((item) =>
-          item.productoId === productoId ? { ...item, cantidad } : item
+          item.productoId === productoId ? { ...item, cantidad } : item,
         );
         set({ items });
       },
-      
+
       clearCart: () => {
         set({ items: [] });
       },
-      
+
       getTotal: () => {
         return get().items.reduce(
           (total, item) => total + item.producto.precio * item.cantidad,
-          0
+          0,
         );
       },
-      
+
       getItemCount: () => {
         return get().items.reduce((count, item) => count + item.cantidad, 0);
       },
     }),
     {
-      name: 'food-store-cart',
+      name: "food-store-cart",
       partialize: (state) => ({ items: state.items }),
-    }
-  )
+    },
+  ),
 );
