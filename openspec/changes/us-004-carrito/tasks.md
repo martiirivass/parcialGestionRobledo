@@ -42,8 +42,8 @@
 
 ## 7. Frontend - Testing
 
-- [ ] 7.1 Escribir tests unitarios para cartStore actualizado
-- [ ] 7.2 Escribir tests para componentes CartItem, CartSummary
+- [x] 7.1 Escribir tests unitarios para cartStore actualizado
+- [x] 7.2 Escribir tests para componentes CartItem, CartSummary
 - [ ] 7.3 Escribir tests para CartPage
 - [ ] 7.4 Testing de integración (carrito completo flujo)
 - [ ] 7.5 Verificar cobertura > 70%
@@ -59,7 +59,7 @@
 
 - [x] 9.1 Crear rama `change/us-004-carrito`
 - [x] 9.2 Commits convencionales por cada tarea completada
-- [ ] 9.3 Push de rama al remoto
+- [x] 9.3 Push de rama al remoto
 - [ ] 9.4 Crear PR para code review
 
 ## 10. Verificación y Archive
