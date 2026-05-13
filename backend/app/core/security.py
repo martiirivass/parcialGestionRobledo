@@ -68,3 +68,18 @@ def verify_refresh_token(token: str) -> bool:
         return str(uuid_obj) == token
     except (ValueError, AttributeError):
         return False
+
+
+def hash_token(token: str) -> str:
+    """
+    Hash a token using bcrypt for secure storage.
+    
+    This prevents token leakage from database dumps - even if someone
+    obtains the database, they cannot use the hashed tokens.
+    """
+    return pwd_context.hash(token)
+
+
+def verify_token_hash(token: str, token_hash: str) -> bool:
+    """Verify a token against its hash"""
+    return pwd_context.verify(token, token_hash)

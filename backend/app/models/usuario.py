@@ -67,14 +67,18 @@ class UsuarioRol(SQLModel, table=True):
 
 
 class RefreshToken(SQLModel, table=True):
-    """RefreshToken - Tokens de renovación"""
+    """RefreshToken - Tokens de renovación con rotación y detección de replay"""
     __tablename__ = "refresh_tokens"
     
     id: Optional[int] = Field(default=None, primary_key=True)
-    token: str = Field(max_length=36, unique=True, index=True, nullable=False)
-    usuario_id: int = Field(foreign_key="usuarios.id", nullable=False)
+    family_id: str = Field(max_length=36, index=True, nullable=False)  # UUID como string
+    generacion: int = Field(default=1, nullable=False)  # Contador de rotación
+    token_hash: str = Field(max_length=255, nullable=False)  # bcrypt hash del token
+    usuario_id: int = Field(foreign_key="usuarios.id", nullable=False, index=True)
     expira_en: datetime = Field(nullable=False)
-    revocado_en: Optional[datetime] = Field(default=None, nullable=True)
+    usado_en: Optional[datetime] = Field(default=None, nullable=True)  # Para rate limiting
+    revocado_en: Optional[datetime] = Field(default=None, nullable=True)  # Soft delete
+    creado_en: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     
     # Relationships
     usuario: Usuario = Relationship(back_populates="refresh_tokens")

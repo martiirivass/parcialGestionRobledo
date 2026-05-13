@@ -27,14 +27,16 @@ class UsuarioRepository(BaseRepository[Usuario]):
 
 
 class RefreshTokenRepository(BaseRepository[RefreshToken]):
-    """Repository for RefreshToken model operations"""
+    """Repository for RefreshToken model operations with family-based rotation"""
     
     def __init__(self, session: Session):
         super().__init__(RefreshToken, session)
     
-    def find_by_token(self, token: str) -> Optional[RefreshToken]:
-        """Find a refresh token by its UUID value"""
-        query = select(RefreshToken).where(RefreshToken.token == token)
+    def find_by_token_hash(self, token_hash: str) -> Optional[RefreshToken]:
+        """Find a refresh token by its hash"""
+        query = select(RefreshToken).where(
+            RefreshToken.token_hash == token_hash
+        )
         return self.session.exec(query).first()
     
     def find_active_by_user(self, usuario_id: int) -> list[RefreshToken]:
@@ -47,6 +49,22 @@ class RefreshTokenRepository(BaseRepository[RefreshToken]):
         )
         return list(self.session.exec(query).all())
     
+    def get_latest_by_family(self, usuario_id: int, family_id: str) -> Optional[RefreshToken]:
+        """Get the latest token in a family by generation"""
+        query = select(RefreshToken).where(
+            (RefreshToken.usuario_id == usuario_id) &
+            (RefreshToken.family_id == family_id) &
+            (RefreshToken.revocado_en == None)
+        ).order_by(RefreshToken.generacion.desc())
+        return self.session.exec(query).first()
+    
+    def get_all_by_family(self, family_id: str) -> list[RefreshToken]:
+        """Get all tokens in a family (for replay detection)"""
+        query = select(RefreshToken).where(
+            RefreshToken.family_id == family_id
+        ).order_by(RefreshToken.generacion.desc())
+        return list(self.session.exec(query).all())
+    
     def revoke_token(self, token_id: int) -> Optional[RefreshToken]:
         """Mark a refresh token as revoked"""
         token = self.get_by_id(token_id)
@@ -56,8 +74,24 @@ class RefreshTokenRepository(BaseRepository[RefreshToken]):
             self.session.refresh(token)
         return token
     
+    def revoke_family(self, family_id: str) -> int:
+        """Revoke all tokens in a family (replay attack response)"""
+        now = datetime.utcnow()
+        tokens = self.session.exec(
+            select(RefreshToken).where(
+                (RefreshToken.family_id == family_id) &
+                (RefreshToken.revocado_en == None)
+            )
+        ).all()
+        
+        for token in tokens:
+            token.revocado_en = now
+        
+        self.session.flush()
+        return len(tokens)
+    
     def revoke_all_for_user(self, usuario_id: int) -> int:
-        """Revoke all tokens for a user (replay attack detection)"""
+        """Revoke all tokens for a user (for logout)"""
         now = datetime.utcnow()
         tokens = self.session.exec(
             select(RefreshToken).where(
@@ -72,16 +106,11 @@ class RefreshTokenRepository(BaseRepository[RefreshToken]):
         self.session.flush()
         return len(tokens)
     
-    def is_token_valid(self, token_str: str) -> bool:
-        """Check if a token exists, is not revoked, and not expired"""
-        token = self.find_by_token(token_str)
-        if not token:
-            return False
-        
-        if token.revocado_en is not None:
-            return False
-        
-        if datetime.utcnow() > token.expira_en:
-            return False
-        
-        return True
+    def mark_used(self, token_id: int) -> Optional[RefreshToken]:
+        """Mark a token as used (for rate limiting)"""
+        token = self.get_by_id(token_id, include_deleted=True)
+        if token:
+            token.usado_en = datetime.utcnow()
+            self.session.flush()
+            self.session.refresh(token)
+        return token
