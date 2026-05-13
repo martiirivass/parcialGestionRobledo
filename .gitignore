@@ -46,5 +46,9 @@ npm-debug.log
 yarn-error.log
 package-lock.json
 
+# Engram memory sync (compartido con compañeros)
+.engram/
+!.engram/.gitkeep
+
 # Optional OPSX files
 openspec/changes/archive/
