@@ -87,6 +87,7 @@ class DetallePedido(SQLModel, table=True):
     producto_id: int = Field(foreign_key="productos.id", nullable=False)
     
     cantidad: int = Field(nullable=False)
+    nombre_snapshot: str = Field(max_length=200, nullable=False)  # Product name at order time
     precio_snapshot: float = Field(nullable=False)  # Price at order time
     subtotal: float = Field(nullable=False)
     personalizacion: Optional[str] = Field(default=None, nullable=True)  # JSON serialized customization
