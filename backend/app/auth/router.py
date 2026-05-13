@@ -174,16 +174,16 @@ async def logout(
     """
     try:
         service = AuthService(session)
-        success = service.logout_user(request.refresh_token)
-        
-        if not success:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid refresh token",
-            )
+        service.logout_user(request.refresh_token)
         
         session.commit()
-        return None
+        return {"message": "Logged out successfully"}
+    except ValueError as e:
+        # Token not found or already revoked
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+        )
     except HTTPException:
         raise
     except Exception as e:

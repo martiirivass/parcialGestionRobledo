@@ -4,6 +4,7 @@
  */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { logout as logoutApi } from "../api";
 
 export interface User {
   id: number;
@@ -76,7 +77,21 @@ export const useAuthStore = create<AuthState>()(
         set({ error });
       },
 
-      logout: () => {
+      logout: async () => {
+        // Get current refresh token before clearing state
+        const refreshToken = get().refreshToken;
+        
+        // Try to revoke token on server (ignore errors - always clear local)
+        if (refreshToken) {
+          try {
+            await logoutApi(refreshToken);
+          } catch (error) {
+            // Log error but continue with local logout
+            console.warn("Failed to revoke refresh token on server:", error);
+          }
+        }
+        
+        // Clear local state regardless of API result
         set({
           user: null,
           accessToken: null,

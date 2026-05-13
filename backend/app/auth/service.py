@@ -172,16 +172,32 @@ class AuthService:
         """
         Logout a user by revoking their refresh token.
         
+        Args:
+            refresh_token_str: The plaintext refresh token
+            
         Returns:
             True if successfully logged out, False if token not found
+            
+        Raises:
+            ValueError: If token is invalid or already revoked
         """
-        token = self.token_repo.find_by_token(refresh_token_str)
+        # Hash the incoming token to look it up in database
+        from app.core.security import hash_token
+        token_hash = hash_token(refresh_token_str)
+        
+        # Find token by hash
+        token = self.token_repo.find_by_token_hash(token_hash)
         
         if not token:
-            return False
+            raise ValueError("Invalid refresh token")
         
+        if token.revocado_en is not None:
+            raise ValueError("Token already revoked")
+        
+        # Soft delete the token (set revocado_en timestamp)
         token.revocado_en = datetime.utcnow()
         self.session.flush()
+        self.session.commit()
         
         return True
     
